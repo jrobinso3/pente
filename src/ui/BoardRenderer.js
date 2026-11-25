@@ -453,11 +453,13 @@ export class BoardRenderer {
     }
 
     // 10. Aiming Crosshair / Preview Ghost Stone
+    const isHumanTurn = state.gameMode === 'local2p' || game.turn === state.humanColor;
     const activeGhost = state.aimPoint || state.previewPoint;
-    if (activeGhost && !state.aiThinking && game.winner === 0 && game.turn === state.humanColor) {
+    if (activeGhost && !state.aiThinking && game.winner === 0 && isHumanTurn) {
       const legal = game.isLegalMove(activeGhost.r, activeGhost.c);
       const gx = pad + activeGhost.c * step;
       const gy = pad + activeGhost.r * step;
+      const ghostColor = state.gameMode === 'local2p' ? game.turn : state.humanColor;
 
       ctx.save();
       ctx.strokeStyle = legal ? 'rgba(16, 185, 129, 0.85)' : 'rgba(239, 68, 68, 0.85)';
@@ -468,7 +470,7 @@ export class BoardRenderer {
       ctx.stroke();
 
       if (legal) {
-        this.drawStone(gx, gy, radius, state.humanColor, 0.55);
+        this.drawStone(gx, gy, radius, ghostColor, 0.55);
       } else {
         ctx.beginPath();
         ctx.arc(gx, gy, radius * 0.55, 0, Math.PI * 2);
@@ -599,8 +601,9 @@ export class BoardRenderer {
     });
 
     this.canvas.addEventListener('pointermove', (e) => {
+      const isHumanTurn = this.state.gameMode === 'local2p' || this.game.turn === this.state.humanColor;
       if (!this._pointerDown) {
-        if (e.pointerType === 'mouse' && !this.state.aiThinking && this.game.winner === 0 && this.game.turn === this.state.humanColor) {
+        if (e.pointerType === 'mouse' && !this.state.aiThinking && this.game.winner === 0 && isHumanTurn) {
           this.state.aimPoint = this.screenToBoard(e.clientX, e.clientY);
           this.draw();
         }
@@ -627,7 +630,8 @@ export class BoardRenderer {
       const pt = (this.state.zoom > 1 && this._movedDuringPointer) ? null : this.screenToBoard(e.clientX, e.clientY);
       this.state.aimPoint = null;
 
-      if (pt && this.game.turn === this.state.humanColor && this.game.winner === 0) {
+      const isHumanTurn = this.state.gameMode === 'local2p' || this.game.turn === this.state.humanColor;
+      if (pt && isHumanTurn && this.game.winner === 0) {
         if (this.state.confirmMode) {
           if (this.game.isLegalMove(pt.r, pt.c)) {
             this.state.previewPoint = pt;

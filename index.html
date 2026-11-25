@@ -69,6 +69,19 @@
           <svg class="w-4 h-4 text-[#6E675F]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </button>
 
+        <button id="btnHomeLocal2P" type="button" class="p-4 rounded-2xl editorial-card hover:border-[#161616]/25 text-left flex items-center justify-between gap-3 transition active:scale-[0.99]">
+          <div class="flex items-center gap-3.5">
+            <div class="w-10 h-10 rounded-xl bg-[#F6F2EA] border border-[#161616]/10 flex items-center justify-center shrink-0 text-[#161616]">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            <div>
+              <div class="text-sm font-semibold text-[#161616]">Pass &amp; Play</div>
+              <div class="text-xs text-[#6E675F]">Local 2-player match</div>
+            </div>
+          </div>
+          <svg class="w-4 h-4 text-[#6E675F]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+
         <button id="btnHomePuzzles" type="button" class="p-4 rounded-2xl editorial-card hover:border-[#161616]/25 text-left flex items-center justify-between gap-3 transition active:scale-[0.99]">
           <div class="flex items-center gap-3.5">
             <div class="w-10 h-10 rounded-xl bg-[#F6F2EA] border border-[#161616]/10 flex items-center justify-center shrink-0 text-[#161616]">
@@ -149,7 +162,7 @@
       <div id="matchPlayersStrip" class="flex items-center justify-between gap-2 py-0.5">
         <div id="cardHuman" class="flex items-center gap-2 transition-opacity">
           <div id="humanStoneBadge" class="w-3.5 h-3.5 rounded-full shrink-0 border border-black/15 shadow-sm"></div>
-          <span class="text-xs font-semibold text-[#161616]">You</span>
+          <span id="humanNameLabel" class="text-xs font-semibold text-[#161616]">You</span>
           <span id="humanTurnTag" class="hidden w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
           <div id="humanPips" class="flex items-center gap-1 shrink-0"></div>
           <span class="text-xs font-medium text-[#6E675F] tabular-nums"><span id="humanCapCount">0</span>/5</span>

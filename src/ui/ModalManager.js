@@ -735,6 +735,14 @@ export class ModalManager {
       els.homeMenu.classList.add('hidden');
       this.openSetupModal();
     });
+    els.btnHomeLocal2P.addEventListener('click', () => {
+      state.gameMode = 'local2p';
+      state.humanColor = BLACK;
+      state.aiColor = WHITE;
+      state.mentorMode = false;
+      els.homeMenu.classList.add('hidden');
+      this.onStartNewGame();
+    });
     els.btnHomePuzzles.addEventListener('click', () => this.openPuzzlesModal());
     els.btnHomeShop.addEventListener('click', () => {
       this.renderShop();

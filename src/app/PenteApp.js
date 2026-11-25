@@ -144,8 +144,10 @@ export class PenteApp {
   updateHUD() {
     const { state, game, els } = this;
     const isPuzzle = state.gameMode === 'puzzle';
+    const isLocal2P = state.gameMode === 'local2p';
     const profile = AI_PROFILES[state.tier];
-    els.aiNameLabel.textContent = `${profile.name}`;
+    els.humanNameLabel.textContent = isLocal2P ? 'Player 1' : 'You';
+    els.aiNameLabel.textContent = isLocal2P ? 'Player 2' : `${profile.name}`;
     const tags = [];
     if (game.tournamentRule) tags.push('Tournament');
     if (game.adjacentOnly) tags.push('Adjacent');
@@ -153,26 +155,31 @@ export class PenteApp {
     if (game.noCaptures) tags.push('No-Cap');
     els.modeSubtitle.textContent = isPuzzle
       ? 'Puzzle Mode'
-      : `vs ${profile.name}` + (tags.length ? ` • ${tags.join(', ')}` : '');
+      : isLocal2P
+        ? 'Pass & Play' + (tags.length ? ` • ${tags.join(', ')}` : '')
+        : `vs ${profile.name}` + (tags.length ? ` • ${tags.join(', ')}` : '');
 
+    els.aiAvatarImg.classList.toggle('hidden', isLocal2P);
     els.aiAvatarImg.src = profile.avatar;
     els.pointsBalance.textContent = `$${state.profile.points}`;
     els.homeCoinsBalance.textContent = `$${state.profile.points}`;
     els.homeAchCount.textContent = `${state.profile.unlocked.length}/${ACHIEVEMENTS.length}`;
     const beadSet = BEAD_THEMES[state.profile.activeBead] || BEAD_THEMES.classic;
-    els.humanStoneBadge.style.background = state.humanColor === BLACK ? beadSet.p1.css : beadSet.p2.css;
-    els.aiStoneBadge.style.background = state.aiColor === BLACK ? beadSet.p1.css : beadSet.p2.css;
+    const leftColor = isLocal2P ? BLACK : state.humanColor;
+    const rightColor = isLocal2P ? WHITE : state.aiColor;
+    els.humanStoneBadge.style.background = leftColor === BLACK ? beadSet.p1.css : beadSet.p2.css;
+    els.aiStoneBadge.style.background = rightColor === BLACK ? beadSet.p1.css : beadSet.p2.css;
 
-    const hCaps = game.captures[state.humanColor];
-    const aCaps = game.captures[state.aiColor];
+    const hCaps = game.captures[leftColor];
+    const aCaps = game.captures[rightColor];
     els.humanCapCount.textContent = hCaps;
     els.aiCapCount.textContent = aCaps;
 
-    this._renderPips(els.humanPips, hCaps, state.aiColor);
-    this._renderPips(els.aiPips, aCaps, state.humanColor);
+    this._renderPips(els.humanPips, hCaps, rightColor);
+    this._renderPips(els.aiPips, aCaps, leftColor);
 
-    const humanTurn = game.winner === 0 && game.turn === state.humanColor;
-    const aiTurn = game.winner === 0 && game.turn === state.aiColor;
+    const humanTurn = game.winner === 0 && game.turn === leftColor;
+    const aiTurn = game.winner === 0 && game.turn === rightColor;
 
     els.humanTurnTag.classList.toggle('hidden', !humanTurn);
     els.aiTurnTag.classList.toggle('hidden', !aiTurn);
@@ -183,12 +190,17 @@ export class PenteApp {
 
     els.moveCountBadge.textContent = game.moveCount + 1;
     els.btnUndo.disabled = game.history.length === 0 || state.aiThinking;
-    els.btnHint.disabled = game.winner !== 0 || state.aiThinking || game.turn !== state.humanColor;
+    els.btnHint.disabled = game.winner !== 0 || state.aiThinking || (!isLocal2P && game.turn !== state.humanColor);
 
     els.matchPlayersStrip.classList.toggle('hidden', isPuzzle);
     els.aiDialogueBox.classList.toggle('hidden', isPuzzle);
+    if (isLocal2P) {
+      const activeName = game.turn === BLACK ? 'Player 1' : 'Player 2';
+      els.aiDialogueSpeaker.textContent = `${activeName}'s turn`;
+      els.aiDialogueText.textContent = game.moveCount === 0 ? 'Open on the center point' : 'Tap an intersection to place a bead';
+    }
     els.puzzleBar.classList.toggle('hidden', !isPuzzle);
-    els.btnMentor.classList.toggle('hidden', isPuzzle);
+    els.btnMentor.classList.toggle('hidden', isPuzzle || isLocal2P);
 
     const isStory = state.gameMode === 'story';
     els.storyBanner.classList.toggle('hidden', !isStory);
@@ -241,7 +253,8 @@ export class PenteApp {
 
   executeHumanMove(r, c) {
     const { state, game } = this;
-    if (state.aiThinking || game.winner !== 0 || game.turn !== state.humanColor) return;
+    const isLocal2P = state.gameMode === 'local2p';
+    if (state.aiThinking || game.winner !== 0 || (!isLocal2P && game.turn !== state.humanColor)) return;
     if (!game.isLegalMove(r, c)) {
       if (game.moveCount === 0) this.showToast('First stone must be placed on the center point');
       else if (game.tournamentRule && game.moveCount === 2) this.showToast('Tournament rule: play outside the dashed center box');
@@ -253,18 +266,25 @@ export class PenteApp {
     state.previewPoint = null;
     state.aimPoint = null;
 
+    const movingPlayer = game.turn;
+    const oppPlayer = movingPlayer === BLACK ? WHITE : BLACK;
     const rec = game.makeMove(r, c);
     this.sfx.playStone();
-    this.mentorCoach.evaluateHumanMove(r, c, rec);
+    if (!isLocal2P) {
+      this.mentorCoach.evaluateHumanMove(r, c, rec);
+    }
 
     if (rec.capturedStones.length > 0) {
       this.sfx.playCapture();
-      this.renderer.triggerCaptureFlash(rec.capturedStones, state.aiColor);
-      this.showToast(`Captured ${rec.pairsGained} pair${rec.pairsGained > 1 ? 's' : ''}!`);
-      this.profileStore.unlockAchievement('first_cap');
-      if (rec.pairsGained >= 2) this.profileStore.unlockAchievement('multi_cap');
-      this.speakAI('humanCap');
-    } else {
+      this.renderer.triggerCaptureFlash(rec.capturedStones, oppPlayer);
+      const who = isLocal2P ? (movingPlayer === BLACK ? 'Player 1' : 'Player 2') : 'You';
+      this.showToast(`${who} captured ${rec.pairsGained} pair${rec.pairsGained > 1 ? 's' : ''}!`);
+      if (!isLocal2P) {
+        this.profileStore.unlockAchievement('first_cap');
+        if (rec.pairsGained >= 2) this.profileStore.unlockAchievement('multi_cap');
+        this.speakAI('humanCap');
+      }
+    } else if (!isLocal2P) {
       let maxLine = 1;
       for (let d = 0; d < 4; d++) {
         const info = this.ai.lineStatsAt(game, r, c, DIRS[d][0], DIRS[d][1], state.humanColor);
@@ -274,8 +294,10 @@ export class PenteApp {
     }
 
     state.mentorDrill = null;
-    this.speakAI('start');
-    this.mentorCoach.analyzeTurn();
+    if (!isLocal2P) {
+      this.speakAI('start');
+      this.mentorCoach.analyzeTurn();
+    }
     this.updateHUD();
     this.renderer.resize();
 
@@ -284,7 +306,7 @@ export class PenteApp {
       return;
     }
 
-    if (state.gameMode !== 'puzzle') {
+    if (state.gameMode !== 'puzzle' && !isLocal2P) {
       this.scheduleAIMove();
     }
   }
@@ -329,6 +351,23 @@ export class PenteApp {
 
   finishGame() {
     const { state, game, els } = this;
+    if (state.gameMode === 'local2p') {
+      const p1Won = game.winner === BLACK;
+      this.sfx.playWin(true);
+      els.winBadgeIcon.textContent = 'Π';
+      els.winTitle.textContent = p1Won ? 'Player 1 Wins' : 'Player 2 Wins';
+      els.winReason.textContent = game.winReason;
+      els.winQuoteBox.classList.add('hidden');
+      els.statMoves.textContent = game.moveCount;
+      els.statHumanCaps.textContent = game.captures[BLACK];
+      els.statAICaps.textContent = game.captures[WHITE];
+      els.btnBackToProgress.textContent = 'Main Menu';
+      this.updateHUD();
+      els.gameOverModal.classList.remove('hidden');
+      els.gameOverModal.classList.add('flex');
+      return;
+    }
+    els.winQuoteBox.classList.remove('hidden');
     const humanWon = game.winner === state.humanColor;
     const prof = AI_PROFILES[state.tier];
     this.sfx.playWin(humanWon);
@@ -402,7 +441,9 @@ export class PenteApp {
     this.updateHUD();
     this.renderer.draw();
 
-    if (game.turn === state.aiColor) {
+    if (state.gameMode === 'local2p') {
+      this.showToast("Pass & Play — Player 1 opens on center");
+    } else if (game.turn === state.aiColor) {
       this.scheduleAIMove();
     } else {
       this.showToast('Your turn — open on the center point');
@@ -450,7 +491,7 @@ export class PenteApp {
     els.btnUndo.addEventListener('click', () => {
       if (state.aiThinking || game.history.length === 0) return;
       game.undoMove();
-      if (game.history.length > 0 && game.turn === state.aiColor) {
+      if (state.gameMode !== 'local2p' && game.history.length > 0 && game.turn === state.aiColor) {
         game.undoMove();
       }
       state.hintPoint = null;
@@ -461,7 +502,8 @@ export class PenteApp {
     });
 
     els.btnHint.addEventListener('click', () => {
-      if (state.aiThinking || game.winner !== 0 || game.turn !== state.humanColor) return;
+      const isLocal2P = state.gameMode === 'local2p';
+      if (state.aiThinking || game.winner !== 0 || (!isLocal2P && game.turn !== state.humanColor)) return;
       const best = this.ai.chooseMove(game, 'master');
       if (best) {
         state.hintPoint = { r: best.r, c: best.c };
@@ -503,8 +545,9 @@ export class PenteApp {
       'winReason', 'statMoves', 'statHumanCaps', 'statAICaps',
       'btnReviewBoard', 'btnPlayAgain', 'setupModal', 'btnCloseSetup',
       'btnApplyStart', 'btnSideBlack', 'btnSideWhite', 'homeMenu',
-      'homeCoinsBalance', 'btnHomeCoins', 'btnHomeStory', 'btnHomeFreePlay',
+      'homeCoinsBalance', 'btnHomeCoins', 'btnHomeStory', 'btnHomeFreePlay', 'btnHomeLocal2P',
       'btnHomePuzzles', 'btnHomeShop', 'btnHomeAchievements', 'homeAchCount',
+      'humanNameLabel', 'winQuoteBox',
       'achievementsModal', 'achModalCount', 'achCoinsDisplay',
       'btnCloseAchievements', 'achievementsBody', 'btnHomeRules', 'btnGoHome',
       'puzzlesModal', 'puzzlesCoinsDisplay', 'btnClosePuzzles', 'puzzlesBody',
