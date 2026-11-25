@@ -565,7 +565,7 @@ export class ModalManager {
             this.onUpdateHUD();
             this.showToast(`Unlocked ${prof.name} for $${prof.unlockCost}!`);
           } else {
-            this.showToast(`Unlock ${prof.name} in Workshop ($${prof.unlockCost})!`);
+            this.showToast(`Unlock ${prof.name} in Store ($${prof.unlockCost})!`);
             return;
           }
         }
