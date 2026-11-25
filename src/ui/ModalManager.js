@@ -498,6 +498,8 @@ export class ModalManager {
 
     state.gameMode = 'puzzle';
     state.tier = tierKey;
+    state.puzzleSolved = false;
+    state.currentPuzzle = { tierKey, idx };
     state.mentorDrill = Object.assign({}, drill, { tierKey, puzzleId: `${tierKey}_${idx}` });
     game.loadPosition({
       stones: drill.stones,
@@ -517,6 +519,8 @@ export class ModalManager {
     const goal = drill.goalCoord || drill.goalCoords[0];
     state.mentorBestMove = { r: goal[0], c: goal[1] };
     state.mentorAltMove = null;
+    els.puzzleBarTitle.textContent = drill.title;
+    els.puzzleBarPrompt.textContent = drill.prompt;
     els.mentorHeadline.textContent = drill.title;
     els.mentorAdvice.textContent = drill.prompt;
     this._hideModal(els.puzzlesModal);

@@ -90,6 +90,7 @@ export class MentorCoach {
         ? (r === d.goalCoord[0] && c === d.goalCoord[1])
         : (d.goalCoords && d.goalCoords.some(([gr, gc]) => gr === r && gc === c));
       if (hitGoal) {
+        state.puzzleSolved = true;
         const pId = d.puzzleId || `${state.tier}_${d.title}`;
         const currPack = MENTOR_CURRICULUM[d.tierKey || state.tier] || MENTOR_CURRICULUM.novice;
         const firstSolve = !state.profile.solvedPuzzles.includes(pId);

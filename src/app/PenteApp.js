@@ -54,6 +54,8 @@ export class PenteApp {
       boardPx: 400,
       shopTab: 'opponents',
       gameMode: 'free',
+      puzzleSolved: false,
+      currentPuzzle: null,
       storyChapterIdx: 0,
       profile: this.profileStore.data
     };
@@ -233,6 +235,7 @@ export class PenteApp {
     }
     els.puzzleBar.classList.toggle('hidden', !isPuzzle);
     els.btnMentor.classList.toggle('hidden', isPuzzle || isLocal2P || isP2P);
+    els.btnNewGame.textContent = (isPuzzle && state.puzzleSolved) ? 'Next' : 'New';
 
     const isStory = state.gameMode === 'story';
     els.storyBanner.classList.toggle('hidden', !isStory);
@@ -337,7 +340,9 @@ export class PenteApp {
       if (state.gameMode === 'p2p') {
         this.peer.send({ type: 'move', r, c });
       }
-      this.finishGame();
+      if (state.gameMode !== 'puzzle') {
+        this.finishGame();
+      }
       return;
     }
 
@@ -556,6 +561,27 @@ export class PenteApp {
     }
   }
 
+  _startNextPuzzle() {
+    const { state } = this;
+    const cur = state.currentPuzzle;
+    if (!cur) return;
+    const pack = MENTOR_CURRICULUM[cur.tierKey];
+    if (pack && cur.idx + 1 < pack.drills.length) {
+      this.modals.startSpecificPuzzle(cur.tierKey, cur.idx + 1);
+      return;
+    }
+    const keys = Object.keys(MENTOR_CURRICULUM);
+    const startPos = keys.indexOf(cur.tierKey);
+    for (let offset = 1; offset <= keys.length; offset++) {
+      const nextKey = keys[(startPos + offset) % keys.length];
+      if (state.profile.ownedPuzzlePacks.includes(nextKey) && MENTOR_CURRICULUM[nextKey].drills.length > 0) {
+        this.modals.startSpecificPuzzle(nextKey, 0);
+        return;
+      }
+    }
+    this.modals.startSpecificPuzzle(cur.tierKey, 0);
+  }
+
   _bindToolbarEvents() {
     const { state, game, els } = this;
 
@@ -587,7 +613,17 @@ export class PenteApp {
       els.btnSound.textContent = this.sfx.enabled ? 'Sound: On' : 'Sound: Muted';
     });
 
-    els.btnNewGame.addEventListener('click', () => this.startNewGame(false));
+    els.btnNewGame.addEventListener('click', () => {
+      if (state.gameMode === 'puzzle' && state.currentPuzzle) {
+        if (state.puzzleSolved) {
+          this._startNextPuzzle();
+        } else {
+          this.modals.startSpecificPuzzle(state.currentPuzzle.tierKey, state.currentPuzzle.idx);
+        }
+        return;
+      }
+      this.startNewGame(false);
+    });
     els.btnPlayAgain.addEventListener('click', () => this.startNewGame(false));
     els.btnReviewBoard.addEventListener('click', () => {
       els.gameOverModal.classList.add('hidden');
