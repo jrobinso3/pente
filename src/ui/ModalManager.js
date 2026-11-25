@@ -826,7 +826,7 @@ export class ModalManager {
     els.btnP2PCopyLink.addEventListener('click', () => {
       const code = els.p2pOfferOutput.value.trim();
       if (!code) return;
-      const url = `${window.location.origin}${window.location.pathname}?offer=${code}`;
+      const url = `${window.location.origin}${window.location.pathname}?offer=${encodeURIComponent(code)}`;
       copyText(url, 'invite link');
     });
 

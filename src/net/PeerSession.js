@@ -21,6 +21,47 @@ export class PeerSession {
   }
 
   static encodeSignal(desc) {
+    // Extract only the non-boilerplate fields from a WebRTC DataChannel SDP
+    const lines = desc.sdp.split(/\r?\n/);
+    let ufrag = '';
+    let pwd = '';
+    let fpHex = '';
+    let setup = desc.type === 'offer' ? 'a' : 'p'; // actpass | active | passive
+    const cands = [];
+
+    for (const line of lines) {
+      if (line.startsWith('a=ice-ufrag:')) ufrag = line.slice(12).trim();
+      else if (line.startsWith('a=ice-pwd:')) pwd = line.slice(10).trim();
+      else if (line.startsWith('a=fingerprint:sha-256 ')) fpHex = line.slice(22).trim().replace(/:/g, '');
+      else if (line.startsWith('a=setup:')) {
+        const s = line.slice(8).trim();
+        setup = s === 'actpass' ? 'a' : s === 'active' ? 'c' : 'p';
+      } else if (line.startsWith('a=candidate:')) {
+        // Format: a=candidate:<foundation> <comp> <proto> <prio> <ip> <port> typ <type> ...
+        const parts = line.slice(12).trim().split(/\s+/);
+        if (parts.length >= 8 && parts[2].toLowerCase() === 'udp') {
+          const ip = parts[4];
+          const port = parts[5];
+          const typ = parts[7];
+          // Skip .local mDNS hostnames if we already have a srflx/public IP, or include compactly
+          cands.push(`${ip}|${port}|${typ[0]}|${parts[0]}|${parts[3]}`);
+        }
+      }
+    }
+
+    if (ufrag && pwd && fpHex.length === 64 && cands.length > 0) {
+      // Pack 32-byte fingerprint into base64url (43 chars)
+      const fpBytes = new Uint8Array(32);
+      for (let i = 0; i < 32; i++) fpBytes[i] = parseInt(fpHex.slice(i * 2, i * 2 + 2), 16);
+      let fpBin = '';
+      for (let i = 0; i < 32; i++) fpBin += String.fromCharCode(fpBytes[i]);
+      const fpB64 = btoa(fpBin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+
+      const compact = [desc.type === 'offer' ? 'o' : 'a', setup, ufrag, pwd, fpB64, ...cands].join('~');
+      return '1' + compact;
+    }
+
+    // Fallback to raw JSON base64url
     const json = JSON.stringify({ type: desc.type, sdp: desc.sdp });
     const bytes = new TextEncoder().encode(json);
     let bin = '';
@@ -31,17 +72,66 @@ export class PeerSession {
   static decodeSignal(code) {
     const clean = (code || '').trim();
     if (!clean) throw new Error('Empty connection code');
-    // Support full URL with ?offer=... or raw base64url code
     let raw = clean;
     if (clean.includes('offer=')) {
       try {
         const u = new URL(clean);
         raw = u.searchParams.get('offer') || clean;
       } catch (e) {
-        const m = clean.match(/offer=([A-Za-z0-9_-]+)/);
-        if (m) raw = m[1];
+        const m = clean.match(/offer=([^&\s]+)/);
+        if (m) raw = decodeURIComponent(m[1]);
       }
     }
+
+    // Compact format v1: starts with '1o~' or '1a~'
+    if (raw.startsWith('1o~') || raw.startsWith('1a~')) {
+      const parts = raw.slice(1).split('~');
+      if (parts.length < 6) throw new Error('Invalid compact code');
+      const [tCode, setupCode, ufrag, pwd, fpB64, ...candStrs] = parts;
+      const type = tCode === 'o' ? 'offer' : 'answer';
+      const setup = setupCode === 'a' ? 'actpass' : setupCode === 'c' ? 'active' : 'passive';
+
+      const b64 = fpB64.replace(/-/g, '+').replace(/_/g, '/');
+      const pad = b64.length % 4 === 0 ? '' : '='.repeat(4 - (b64.length % 4));
+      const fpBin = atob(b64 + pad);
+      const fpHex = Array.from(fpBin, (ch) => ch.charCodeAt(0).toString(16).padStart(2, '0').toUpperCase()).join(':');
+
+      const firstCand = candStrs[0].split('|');
+      const mainIp = firstCand[0].includes(':') ? '127.0.0.1' : firstCand[0];
+      const mainPort = firstCand[1] || '9';
+
+      const candLines = candStrs.map((c) => {
+        const [ip, port, typC, found, prio] = c.split('|');
+        const typ = typC === 's' ? 'srflx' : typC === 'r' ? 'relay' : 'host';
+        const raddr = typ === 'host' ? '' : ' raddr 0.0.0.0 rport 0';
+        return `a=candidate:${found || '1'} 1 udp ${prio || '2113937151'} ${ip} ${port} typ ${typ}${raddr} generation 0`;
+      });
+
+      const sdp = [
+        'v=0',
+        'o=- 1 2 IN IP4 127.0.0.1',
+        's=-',
+        't=0 0',
+        'a=group:BUNDLE 0',
+        'a=extmap-allow-mixed',
+        'a=msid-semantic: WMS',
+        `m=application ${mainPort} UDP/DTLS/SCTP webrtc-datachannel`,
+        `c=IN IP4 ${mainIp}`,
+        ...candLines,
+        `a=ice-ufrag:${ufrag}`,
+        `a=ice-pwd:${pwd}`,
+        'a=ice-options:trickle',
+        `a=fingerprint:sha-256 ${fpHex}`,
+        `a=setup:${setup}`,
+        'a=mid:0',
+        'a=sctp-port:5000',
+        'a=max-message-size:262144',
+        ''
+      ].join('\r\n');
+
+      return { type, sdp };
+    }
+
     const b64 = raw.replace(/-/g, '+').replace(/_/g, '/');
     const pad = b64.length % 4 === 0 ? '' : '='.repeat(4 - (b64.length % 4));
     const bin = atob(b64 + pad);
