@@ -1,8 +1,11 @@
-const CACHE_NAME = 'pente-pwa-v2';
+const CACHE_NAME = 'pente-pwa-v4';
 const APP_SHELL = [
   './',
   './index.html',
   './manifest.webmanifest',
+  './assets/pente-logo.svg',
+  './assets/friz-quadrata-std-webfont/friz-quadrata-std-medium-5870338ec7ef8.woff',
+  './assets/friz-quadrata-std-webfont/friz-quadrata-std-bold-587034a220f9f.woff',
   './styles/app.css',
   './src/main.js',
   './src/app/PenteApp.js',

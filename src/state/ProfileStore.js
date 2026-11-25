@@ -12,11 +12,11 @@ export class ProfileStore {
       unlocked: [],
       ownedRivals: ['novice'],
       ownedBeads: ['classic'],
-      ownedBoards: ['hideaway', 'original_78'],
+      ownedBoards: ['walnut_travertine', 'hideaway', 'original_78'],
       ownedPuzzlePacks: ['novice'],
       solvedPuzzles: [],
       activeBead: 'classic',
-      activeBoard: 'original_78',
+      activeBoard: 'walnut_travertine',
       drillsSolved: 0,
       storyCleared: [],
       storyPlays: {},
@@ -33,7 +33,8 @@ export class ProfileStore {
         const parsed = JSON.parse(raw);
         this.data = Object.assign({}, this.data, parsed);
         if (!Array.isArray(this.data.ownedBeads)) this.data.ownedBeads = ['classic'];
-        if (!Array.isArray(this.data.ownedBoards)) this.data.ownedBoards = ['hideaway', 'original_78'];
+        if (!Array.isArray(this.data.ownedBoards)) this.data.ownedBoards = ['walnut_travertine', 'hideaway', 'original_78'];
+        if (!this.data.ownedBoards.includes('walnut_travertine')) this.data.ownedBoards.unshift('walnut_travertine');
         if (!Array.isArray(this.data.unlocked)) this.data.unlocked = [];
         if (!Array.isArray(this.data.storyCleared)) this.data.storyCleared = [];
         if (!this.data.storyPlays || typeof this.data.storyPlays !== 'object') this.data.storyPlays = {};

@@ -176,10 +176,10 @@ export class PenteApp {
 
     els.humanTurnTag.classList.toggle('hidden', !humanTurn);
     els.aiTurnTag.classList.toggle('hidden', !aiTurn);
-    els.cardHuman.classList.toggle('border-emerald-400/50', humanTurn);
-    els.cardHuman.classList.toggle('border-white/10', !humanTurn);
-    els.cardAI.classList.toggle('border-amber-400/50', aiTurn);
-    els.cardAI.classList.toggle('border-white/10', !aiTurn);
+    els.cardHuman.classList.toggle('opacity-100', humanTurn);
+    els.cardHuman.classList.toggle('opacity-70', !humanTurn);
+    els.cardAI.classList.toggle('opacity-100', aiTurn);
+    els.cardAI.classList.toggle('opacity-70', !aiTurn);
 
     els.moveCountBadge.textContent = game.moveCount + 1;
     els.btnUndo.disabled = game.history.length === 0 || state.aiThinking;
@@ -192,8 +192,7 @@ export class PenteApp {
 
     const isStory = state.gameMode === 'story';
     els.storyBanner.classList.toggle('hidden', !isStory);
-    els.btnStory.classList.toggle('border-amber-400/60', isStory);
-    els.btnStory.classList.toggle('bg-amber-500/20', isStory);
+    els.btnStory.classList.toggle('border-[#161616]/40', isStory);
     if (isStory) {
       const ch = STORY_CHAPTERS[state.storyChapterIdx] || STORY_CHAPTERS[0];
       els.storyChapterBadge.textContent = ch.badge;
@@ -204,9 +203,9 @@ export class PenteApp {
     const curr = MENTOR_CURRICULUM[state.tier] || MENTOR_CURRICULUM.novice;
     els.mentorLevelBadge.textContent = curr.badge;
     els.mentorPanel.classList.toggle('hidden', !state.mentorMode || isPuzzle);
-    els.btnMentor.classList.toggle('border-emerald-400/60', state.mentorMode);
-    els.btnMentor.classList.toggle('bg-emerald-500/20', state.mentorMode);
-    els.btnMentor.classList.toggle('text-emerald-200', state.mentorMode);
+    els.btnMentor.classList.toggle('bg-[#161616]', state.mentorMode);
+    els.btnMentor.classList.toggle('text-white', state.mentorMode);
+    els.btnMentor.classList.toggle('text-[#161616]', !state.mentorMode);
     els.btnMentorOverlay.textContent = state.mentorShowOverlay ? 'Hide ★' : 'Show ★';
 
     if (state.confirmMode && state.previewPoint && humanTurn) {
@@ -225,12 +224,16 @@ export class PenteApp {
     const pStyle = capturedStoneColor === BLACK ? beadSet.p1 : beadSet.p2;
     for (let i = 0; i < 5; i++) {
       const div = document.createElement('div');
-      div.className = `pip ${i < count ? '' : 'pip-empty'}`;
-      if (i < count) {
-        div.style.background = pStyle.css;
-        div.style.border = `1px solid ${pStyle.rim}`;
-        div.style.boxShadow = `0 0 8px ${pStyle.c1}`;
-        div.style.transform = 'scale(1.18)';
+      const filled = i < count;
+      div.className = `pip ${filled ? 'pip-glass-filled' : 'pip-empty'}`;
+      if (filled) {
+        div.style.background = [
+          'radial-gradient(ellipse 42% 28% at 34% 26%, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.25) 60%, rgba(255,255,255,0) 100%)',
+          `radial-gradient(circle at 66% 70%, ${pStyle.caustic} 0%, rgba(255,255,255,0) 58%)`,
+          `radial-gradient(circle at 46% 44%, ${pStyle.c0} 0%, ${pStyle.c1} 46%, ${pStyle.c2} 78%, ${pStyle.c3} 100%)`
+        ].join(', ');
+        div.style.border = `1px solid ${pStyle.edge}`;
+        div.style.boxShadow = `0 2px 5px rgba(20, 14, 8, 0.28), 0 1px 3px ${pStyle.c2}, inset 0 -1px 2px ${pStyle.rim}`;
       }
       container.appendChild(div);
     }
@@ -434,7 +437,7 @@ export class PenteApp {
 
     els.btnSound.addEventListener('click', () => {
       this.sfx.enabled = !this.sfx.enabled;
-      els.btnSound.textContent = this.sfx.enabled ? '🔊 Sound' : '🔇 Muted';
+      els.btnSound.textContent = this.sfx.enabled ? 'Sound: On' : 'Sound: Muted';
     });
 
     els.btnNewGame.addEventListener('click', this.startNewGame);

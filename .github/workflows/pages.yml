@@ -26,9 +26,10 @@ jobs:
           enablement: true
       - name: Prepare static site
         run: |
-          mkdir -p _site
+          mkdir -p _site _site/assets
           cp index.html manifest.webmanifest sw.js .nojekyll _site/
-          cp -r icons styles src _site/
+          cp assets/pente-logo.svg _site/assets/
+          cp -r icons styles src assets _site/
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

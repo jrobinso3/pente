@@ -126,6 +126,20 @@ export const BEAD_THEMES = {
 };
 
 export const BOARD_THEMES = {
+  walnut_travertine: {
+    name: 'Walnut & Travertine',
+    cost: 0,
+    desc: 'Oiled walnut frame with honed limestone',
+    walnutTravertine: true,
+    bg0: '#e8decb',
+    bg1: '#dfd3bc',
+    bg2: '#d5c7ad',
+    line: 'rgba(34, 28, 22, 0.72)',
+    border: 'rgba(34, 28, 22, 0.85)',
+    star: '#221c16',
+    tengen: '#221c16',
+    grain: 'rgba(130, 108, 82, 0.08)'
+  },
   hideaway: {
     name: 'Hideaway Tie-Dye', cost: 0, desc: 'Psychedelic 70s rainbow swirl inspired by Hideaway Pizza',
     tiedye: true,

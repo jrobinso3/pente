@@ -47,8 +47,14 @@ export class BoardRenderer {
 
   getMetrics() {
     const size = this.state.boardPx;
-    const isOrig = this.state.profile && this.state.profile.activeBoard === 'original_78';
-    const pad = isOrig ? Math.max(22, size * 0.082) : Math.max(14, size * 0.042);
+    const active = this.state.profile && this.state.profile.activeBoard;
+    const isOrig = active === 'original_78';
+    const isWalnut = !active || active === 'walnut_travertine';
+    const pad = isOrig
+      ? Math.max(22, size * 0.082)
+      : isWalnut
+        ? Math.max(26, size * 0.095)
+        : Math.max(14, size * 0.042);
     const gridSize = size - pad * 2;
     const step = gridSize / (SIZE - 1);
     return { size, pad, gridSize, step };
@@ -107,10 +113,82 @@ export class BoardRenderer {
       ctx.translate(-cx, -cy);
     }
 
-    const bTheme = BOARD_THEMES[state.profile.activeBoard] || BOARD_THEMES.hideaway;
+    const bTheme = BOARD_THEMES[state.profile.activeBoard] || BOARD_THEMES.walnut_travertine;
 
     // 1. Board Surface Background
-    if (bTheme.tiedye) {
+    if (bTheme.walnutTravertine) {
+      const frameW = Math.max(16, size * 0.062);
+
+      // Oiled walnut mitered frame
+      const frameGrad = ctx.createLinearGradient(0, 0, size, size);
+      frameGrad.addColorStop(0, '#5a3d29');
+      frameGrad.addColorStop(0.5, '#462e1e');
+      frameGrad.addColorStop(1, '#362215');
+      ctx.fillStyle = frameGrad;
+      ctx.fillRect(0, 0, size, size);
+
+      // Subtle walnut grain along frame rails
+      ctx.save();
+      ctx.strokeStyle = 'rgba(20, 10, 4, 0.22)';
+      ctx.lineWidth = 1.2;
+      for (let i = 4; i < size; i += 7) {
+        ctx.beginPath();
+        ctx.moveTo(0, i);
+        ctx.bezierCurveTo(size * 0.35, i + Math.sin(i * 0.3) * 1.6, size * 0.65, i - Math.cos(i * 0.2) * 1.6, size, i);
+        ctx.stroke();
+      }
+      // Diagonal miter lines at corners
+      ctx.strokeStyle = 'rgba(24, 14, 8, 0.45)';
+      ctx.lineWidth = 1.4;
+      [
+        [0, 0, frameW, frameW],
+        [size, 0, size - frameW, frameW],
+        [0, size, frameW, size - frameW],
+        [size, size, size - frameW, size - frameW]
+      ].forEach(([x0, y0, x1, y1]) => {
+        ctx.beginPath();
+        ctx.moveTo(x0, y0);
+        ctx.lineTo(x1, y1);
+        ctx.stroke();
+      });
+      // Outer highlight bevel
+      ctx.strokeStyle = 'rgba(255, 224, 185, 0.18)';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(1, 1, size - 2, size - 2);
+      ctx.restore();
+
+      // Honed travertine limestone interior
+      const stoneGrad = ctx.createLinearGradient(frameW, frameW, size - frameW, size - frameW);
+      stoneGrad.addColorStop(0, '#ebe2d1');
+      stoneGrad.addColorStop(0.5, '#e3d8c4');
+      stoneGrad.addColorStop(1, '#d8ccb5');
+      ctx.fillStyle = stoneGrad;
+      ctx.fillRect(frameW, frameW, size - frameW * 2, size - frameW * 2);
+
+      // Subtle travertine mineral clouds
+      const clouds = [
+        [0.3, 0.28, 0.26, 'rgba(182, 165, 138, 0.16)'],
+        [0.72, 0.65, 0.30, 'rgba(170, 152, 124, 0.15)'],
+        [0.45, 0.78, 0.22, 'rgba(255, 250, 240, 0.20)']
+      ];
+      for (const [cx, cy, cr, col] of clouds) {
+        const rg = ctx.createRadialGradient(size * cx, size * cy, 2, size * cx, size * cy, size * cr);
+        rg.addColorStop(0, col);
+        rg.addColorStop(1, 'rgba(235, 226, 209, 0)');
+        ctx.fillStyle = rg;
+        ctx.fillRect(frameW, frameW, size - frameW * 2, size - frameW * 2);
+      }
+
+      // Recessed inner frame shadow onto travertine
+      ctx.save();
+      ctx.strokeStyle = 'rgba(24, 16, 10, 0.32)';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(frameW + 1, frameW + 1, size - frameW * 2 - 2, size - frameW * 2 - 2);
+      ctx.strokeStyle = 'rgba(255, 248, 236, 0.35)';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(frameW - 0.5, frameW - 0.5, size - frameW * 2 + 1, size - frameW * 2 + 1);
+      ctx.restore();
+    } else if (bTheme.tiedye) {
       const baseGrad = ctx.createLinearGradient(0, 0, size, size);
       baseGrad.addColorStop(0, '#fbcfe8');
       baseGrad.addColorStop(0.35, '#fde68a');
@@ -212,14 +290,16 @@ export class BoardRenderer {
       ctx.fillRect(0, 0, size, size);
     }
 
-    // Subtle texture / grain lines
-    ctx.strokeStyle = bTheme.grain;
-    ctx.lineWidth = 1;
-    for (let y = 6; y < size; y += 9) {
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.bezierCurveTo(size * 0.33, y + Math.sin(y) * 2, size * 0.66, y - Math.cos(y) * 2, size, y);
-      ctx.stroke();
+    // Subtle texture / grain lines (skip on walnutTravertine so stone looks crisp)
+    if (!bTheme.walnutTravertine) {
+      ctx.strokeStyle = bTheme.grain;
+      ctx.lineWidth = 1;
+      for (let y = 6; y < size; y += 9) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.bezierCurveTo(size * 0.33, y + Math.sin(y) * 2, size * 0.66, y - Math.cos(y) * 2, size, y);
+        ctx.stroke();
+      }
     }
 
     // 2. Grid Lines

@@ -1,31 +1,36 @@
+@font-face {
+  font-family: 'Friz Quadrata Std';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('../assets/friz-quadrata-std-webfont/friz-quadrata-std-medium-5870338ec7ef8.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Friz Quadrata Std';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('../assets/friz-quadrata-std-webfont/friz-quadrata-std-bold-587034a220f9f.woff') format('woff');
+}
+
 :root {
-  --bg-app: #16110e;
-  --bg-panel: #211a16;
-  --bg-card: #29201b;
-  --border-subtle: rgba(230, 202, 156, 0.18);
-  --accent-gold: #d4a964;
-  --accent-terracotta: #9e3528;
-  --accent-emerald: #6ee7b7;
+  --bg-app: #F6F2EA;
+  --bg-surface: #FFFFFF;
+  --bg-subtle: #EDE7DC;
+  --ink: #161616;
+  --ink-muted: #6E675F;
+  --hairline: rgba(22, 22, 22, 0.11);
+  --accent-brass: #B8873D;
 }
-.tiedye-bg {
-  background:
-    radial-gradient(circle at 20% 18%, rgba(158, 53, 40, 0.24), transparent 50%),
-    radial-gradient(circle at 82% 82%, rgba(212, 169, 100, 0.14), transparent 52%),
-    linear-gradient(160deg, #17120f 0%, #1f1713 55%, #140f0d 100%);
-}
-.tiedye-pill {
-  background: linear-gradient(135deg, #d4a964 0%, #9e3528 50%, #e6ca9c 100%);
-}
+
 * {
   box-sizing: border-box;
-  font-weight: 400 !important;
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
   user-select: none;
 }
-html {
-  font-size: 120%;
-}
+
 html, body {
   margin: 0;
   padding: 0;
@@ -33,25 +38,47 @@ html, body {
   height: 100dvh;
   overflow: hidden;
   overscroll-behavior: none;
-  background:
-    radial-gradient(circle at 20% 18%, rgba(158, 53, 40, 0.22), transparent 50%),
-    radial-gradient(circle at 82% 82%, rgba(212, 169, 100, 0.12), transparent 52%),
-    linear-gradient(160deg, #17120f 0%, #1f1713 55%, #140f0d 100%);
-  color: #f3ead8;
-  font-family: 'Ibarra Real Nova', Georgia, serif;
-  font-weight: 400;
+  background-color: var(--bg-app);
+  background-image: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.55), transparent 65%);
+  color: var(--ink);
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
+
+body {
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-left: env(safe-area-inset-left, 0px);
+}
+
+#homeMenu {
+  background-color: var(--bg-app);
+  background-image: radial-gradient(circle at 50% 15%, rgba(255, 255, 255, 0.7), transparent 60%);
+  padding-top: max(1rem, env(safe-area-inset-top, 0px));
+  padding-bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+}
+
+.font-display {
+  font-family: 'Friz Quadrata Std', 'Ibarra Real Nova', Georgia, serif;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
 .board-wrapper {
   position: relative;
   touch-action: none;
   box-shadow:
-    0 18px 40px -10px rgba(0, 0, 0, 0.75),
-    0 0 0 1px rgba(255, 224, 170, 0.16),
-    inset 0 1px 0 rgba(255, 255, 255, 0.25);
-  border-radius: 12px;
+    0 20px 44px -14px rgba(24, 18, 12, 0.32),
+    0 4px 14px -4px rgba(24, 18, 12, 0.18),
+    0 0 0 1px rgba(22, 22, 22, 0.08);
+  border-radius: 6px;
   overflow: hidden;
-  background: #dfb46e;
+  background: #4B3322;
 }
+
 canvas#penteCanvas {
   display: block;
   width: 100%;
@@ -59,55 +86,62 @@ canvas#penteCanvas {
   touch-action: none;
   cursor: pointer;
 }
+
+/* Photoreal Glass Effect Capture Pips */
 .pip {
-  width: 10px;
-  height: 10px;
+  width: 15px;
+  height: 15px;
   border-radius: 9999px;
-  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease, opacity 0.2s ease;
 }
+
 .pip-empty {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.85) 0%, rgba(235, 229, 218, 0.55) 60%, rgba(205, 196, 182, 0.45) 100%);
+  border: 1px solid rgba(22, 22, 22, 0.18);
+  box-shadow:
+    inset 0 1px 2px rgba(255, 255, 255, 0.9),
+    inset 0 -1px 2px rgba(22, 22, 22, 0.08),
+    0 1px 2px rgba(22, 22, 22, 0.06);
 }
-.pip-filled-black {
-  background: radial-gradient(circle at 30% 28%, rgba(224, 247, 255, 0.95) 0%, rgba(56, 189, 248, 0.85) 32%, rgba(2, 132, 199, 0.92) 72%, rgba(7, 57, 107, 0.98) 100%);
-  border: 1px solid rgba(125, 211, 252, 0.65);
-  box-shadow: 0 0 8px rgba(56, 189, 248, 0.55), inset 0 -2px 3px rgba(186, 230, 253, 0.55);
-  transform: scale(1.18);
+
+.pip-glass-filled {
+  transform: scale(1.06);
 }
-.pip-filled-white {
-  background: radial-gradient(circle at 30% 28%, rgba(255, 228, 228, 0.95) 0%, rgba(248, 113, 113, 0.85) 32%, rgba(220, 38, 38, 0.92) 72%, rgba(110, 14, 22, 0.98) 100%);
-  border: 1px solid rgba(252, 165, 165, 0.65);
-  box-shadow: 0 0 8px rgba(239, 68, 68, 0.55), inset 0 -2px 3px rgba(254, 202, 202, 0.55);
-  transform: scale(1.18);
+
+.floating-dock {
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(22, 22, 22, 0.08);
+  box-shadow:
+    0 12px 32px -8px rgba(22, 18, 14, 0.16),
+    0 2px 8px -2px rgba(22, 18, 14, 0.08);
 }
-@keyframes pulse-ring {
-  0%, 100% { opacity: 0.95; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(1.06); }
+
+.editorial-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--hairline);
+  box-shadow: 0 2px 8px -2px rgba(22, 18, 14, 0.05);
 }
-.thinking-dot {
-  animation: pulse-ring 1s infinite ease-in-out;
-}
+
 .modal-backdrop {
-  background: rgba(10, 9, 8, 0.78);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  background: rgba(22, 19, 15, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
-/* Custom scrollbar inside modals */
+
+.modal-sheet {
+  background: var(--bg-app);
+  border: 1px solid var(--hairline);
+  box-shadow: 0 24px 60px -12px rgba(20, 16, 12, 0.35);
+}
+
 .scroll-thin::-webkit-scrollbar {
   width: 5px;
 }
+
 .scroll-thin::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.18);
+  background: rgba(22, 22, 22, 0.16);
   border-radius: 9999px;
-}
-body {
-  padding-top: env(safe-area-inset-top, 0px);
-  padding-right: env(safe-area-inset-right, 0px);
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-  padding-left: env(safe-area-inset-left, 0px);
-}
-#homeMenu {
-  padding-top: max(1rem, env(safe-area-inset-top, 0px));
-  padding-bottom: max(1rem, env(safe-area-inset-bottom, 0px));
 }

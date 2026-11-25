@@ -6,8 +6,8 @@
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#16110e",
-  "theme_color": "#16110e",
+  "background_color": "#F6F2EA",
+  "theme_color": "#F6F2EA",
   "categories": ["games", "strategy", "board"],
   "icons": [
     {

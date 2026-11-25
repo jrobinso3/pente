@@ -53,19 +53,19 @@ export class ModalManager {
       btn.classList.toggle('opacity-60', !owned);
       const badge = btn.querySelector('span.rounded-full');
       if (badge) {
-        badge.textContent = owned ? `+$${prof.winPrize} / -$${prof.losePenalty}` : `🔒 Unlock $${prof.unlockCost}`;
+        badge.textContent = owned ? `+$${prof.winPrize} / -$${prof.losePenalty}` : `Unlock $${prof.unlockCost}`;
       }
-      btn.classList.toggle('border-amber-400/60', active);
-      btn.classList.toggle('bg-amber-500/10', active);
-      btn.classList.toggle('border-white/10', !active);
-      btn.classList.toggle('bg-[#2a241e]', !active);
+      btn.classList.toggle('border-[#161616]', active);
+      btn.classList.toggle('bg-[#EDE7DC]', active);
+      btn.classList.toggle('border-[#161616]/10', !active);
+      btn.classList.toggle('bg-white', !active);
     });
-    els.btnSideBlack.classList.toggle('border-amber-400/60', this._pendingSide === BLACK);
-    els.btnSideBlack.classList.toggle('bg-amber-500/10', this._pendingSide === BLACK);
-    els.btnSideBlack.classList.toggle('border-white/10', this._pendingSide !== BLACK);
-    els.btnSideWhite.classList.toggle('border-amber-400/60', this._pendingSide === WHITE);
-    els.btnSideWhite.classList.toggle('bg-amber-500/10', this._pendingSide === WHITE);
-    els.btnSideWhite.classList.toggle('border-white/10', this._pendingSide !== WHITE);
+    els.btnSideBlack.classList.toggle('border-[#161616]', this._pendingSide === BLACK);
+    els.btnSideBlack.classList.toggle('bg-[#EDE7DC]', this._pendingSide === BLACK);
+    els.btnSideBlack.classList.toggle('border-[#161616]/10', this._pendingSide !== BLACK);
+    els.btnSideWhite.classList.toggle('border-[#161616]', this._pendingSide === WHITE);
+    els.btnSideWhite.classList.toggle('bg-[#EDE7DC]', this._pendingSide === WHITE);
+    els.btnSideWhite.classList.toggle('border-[#161616]/10', this._pendingSide !== WHITE);
     els.chkMentorMode.checked = state.mentorMode;
     els.chkConfirmMode.checked = state.confirmMode;
   }
@@ -94,8 +94,8 @@ export class ModalManager {
           <div class="flex flex-col items-center">
             <div class="w-0.5 h-3 ${prevCleared ? 'bg-amber-400/50' : 'bg-white/10'}"></div>
             <span class="px-2 py-0.5 rounded-full text-[12px] font-bold border ${
-              owned ? 'bg-emerald-500/15 border-emerald-400/30 text-emerald-300' : 'bg-[#1a1612] border-amber-400/30 text-amber-300'
-            }">${owned ? '✓ Unlocked' : `🔒 $${prof.unlockCost}`}</span>
+              owned ? 'bg-emerald-700/10 border-emerald-700/25 text-emerald-800' : 'bg-white border-[#161616]/15 text-[#8F6523]'
+            }">${owned ? '✓ Unlocked' : `$${prof.unlockCost}`}</span>
             <div class="w-0.5 h-3 ${prevCleared ? 'bg-amber-400/50' : 'bg-white/10'}"></div>
           </div>
         `;
@@ -110,18 +110,18 @@ export class ModalManager {
 
       const node = document.createElement('div');
       node.className = `p-3 rounded-xl border transition ${
-        rivalOwned && prevCleared ? 'bg-[#2a241e] border-amber-400/30' :
-        prevCleared ? 'bg-[#241f1a] border-white/15' :
-        'bg-[#191613] border-white/5 opacity-60'
+        rivalOwned && prevCleared ? 'bg-white border-[#161616]/15' :
+        prevCleared ? 'bg-white border-[#161616]/12' :
+        'bg-[#EFEAE0] border-[#161616]/5 opacity-60'
       }`;
 
       if (!prevCleared && !cleared) {
         node.innerHTML = `
           <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full bg-white/5 border border-white/15 flex items-center justify-center text-sm font-bold text-stone-400 shrink-0">?</div>
+            <div class="w-10 h-10 rounded-full bg-[#EDE7DC] border border-[#161616]/12 flex items-center justify-center text-sm font-bold text-[#6E675F] shrink-0">?</div>
             <div class="min-w-0 flex-1">
-              <div class="text-xs font-semibold text-stone-300">${ch.badge}: Mystery Rival</div>
-              <div class="text-[13px] text-stone-500">Unlock cost: $${prof.unlockCost}</div>
+              <div class="text-xs font-semibold text-[#3F3A34]">${ch.badge}: Mystery Rival</div>
+              <div class="text-[13px] text-[#8A8279]">Unlock cost: $${prof.unlockCost}</div>
             </div>
           </div>
         `;
@@ -129,15 +129,15 @@ export class ModalManager {
         node.innerHTML = `
           <div class="flex items-center justify-between gap-3">
             <div class="flex items-center gap-3 min-w-0">
-              <div class="w-10 h-10 rounded-full bg-amber-500/15 border border-amber-400/35 flex items-center justify-center text-base shrink-0">🔒</div>
+              <div class="w-10 h-10 rounded-full bg-[#EDE7DC] border border-amber-400/35 flex items-center justify-center text-base shrink-0">🔒</div>
               <div class="min-w-0">
-                <div class="text-xs font-bold text-amber-200">${ch.badge}: Next Challenger</div>
-                <div class="text-[13px] text-stone-400">You have $${state.profile.points} / $${prof.unlockCost}</div>
+                <div class="text-xs font-bold text-[#161616]">${ch.badge}: Next Challenger</div>
+                <div class="text-[13px] text-[#6E675F]">You have $${state.profile.points} / $${prof.unlockCost}</div>
               </div>
             </div>
             <button type="button" data-unlockstoryrival="${idx}" ${canAfford ? '' : 'disabled'}
               class="px-3 py-1.5 rounded-lg text-[13px] font-bold shrink-0 transition ${
-                canAfford ? 'bg-amber-500 hover:bg-amber-400 text-stone-950 shadow' : 'bg-stone-800 text-stone-500 cursor-not-allowed'
+                canAfford ? 'bg-[#161616] hover:bg-[#2C2C2C] text-white shadow' : 'bg-stone-800 text-[#8A8279] cursor-not-allowed'
               }">Unlock $${prof.unlockCost}</button>
           </div>
         `;
@@ -147,12 +147,12 @@ export class ModalManager {
             <div class="flex items-center gap-3 min-w-0">
               <img src="${prof.avatar}" alt="${prof.name}" class="w-11 h-11 rounded-full object-cover border ${cleared ? 'border-emerald-400/60' : 'border-amber-400/45'} shrink-0" />
               <div class="min-w-0">
-                <div class="text-xs font-bold text-amber-200 leading-snug break-words">${ch.badge}: ${ch.title}</div>
-                <div class="text-[13px] text-stone-400">vs ${prof.name} • Win +$${prof.winPrize}</div>
+                <div class="text-xs font-bold text-[#161616] leading-snug break-words">${ch.badge}: ${ch.title}</div>
+                <div class="text-[13px] text-[#6E675F]">vs ${prof.name} • Win +$${prof.winPrize}</div>
               </div>
             </div>
             <button type="button" data-playchapter="${idx}"
-              class="px-3.5 py-1.5 rounded-lg text-[13px] font-bold bg-amber-500 hover:bg-amber-400 text-stone-950 shadow shrink-0 transition">
+              class="px-3.5 py-1.5 rounded-lg text-[13px] font-bold bg-[#161616] hover:bg-[#2C2C2C] text-white shadow shrink-0 transition">
               ${cleared ? 'Play' : 'Start'}
             </button>
           </div>
@@ -182,7 +182,7 @@ export class ModalManager {
     });
 
     const isLast = this._introBeat >= this._activeIntroBeats.length - 1;
-    els.btnIntroNext.textContent = isLast ? 'Start Match ♟️' : 'Next →';
+    els.btnIntroNext.textContent = isLast ? 'Start Match' : 'Next →';
   }
 
   launchStoryMatch(idx) {
@@ -238,11 +238,11 @@ export class ModalManager {
     els.shopPointsDisplay.textContent = `$${state.profile.points}`;
     document.querySelectorAll('.shop-tab-btn').forEach((btn) => {
       const active = btn.dataset.shoptab === state.shopTab;
-      btn.classList.toggle('bg-amber-500/20', active);
-      btn.classList.toggle('text-amber-200', active);
+      btn.classList.toggle('bg-[#161616] text-white', active);
+      btn.classList.toggle('text-[#161616]', active);
       btn.classList.toggle('border', active);
-      btn.classList.toggle('border-amber-400/40', active);
-      btn.classList.toggle('text-stone-400', !active);
+      btn.classList.toggle('border-[#161616]/20', active);
+      btn.classList.toggle('text-[#6E675F]', !active);
     });
 
     const body = els.shopBody;
@@ -251,7 +251,7 @@ export class ModalManager {
     const activeBeadObj = BEAD_THEMES[state.profile.activeBead] || BEAD_THEMES.classic;
     const activeBoardObj = BOARD_THEMES[state.profile.activeBoard] || BOARD_THEMES.hideaway;
     const summary = document.createElement('div');
-    summary.className = 'p-2.5 rounded-xl bg-black/25 border border-white/10 flex items-center justify-between gap-2';
+    summary.className = 'p-2.5 rounded-xl bg-[#EDE7DC] border border-[#161616]/10 flex items-center justify-between gap-2';
     summary.innerHTML = `
       <div class="flex items-center gap-2.5 min-w-0">
         <div class="w-8 h-8 rounded-lg border shrink-0 flex items-center justify-center gap-0.5 shadow" style="background:linear-gradient(135deg,${activeBoardObj.bg0},${activeBoardObj.bg2});border-color:${activeBoardObj.border}">
@@ -259,11 +259,11 @@ export class ModalManager {
           <span class="w-2.5 h-2.5 rounded-full" style="background:${activeBeadObj.p2.css}"></span>
         </div>
         <div class="min-w-0">
-          <div class="text-[13px] font-bold text-amber-100 leading-snug break-words">${activeBoardObj.name}</div>
-          <div class="text-[12px] text-stone-400 leading-snug break-words">${activeBeadObj.name}</div>
+          <div class="text-[13px] font-bold text-[#161616] leading-snug break-words">${activeBoardObj.name}</div>
+          <div class="text-[12px] text-[#6E675F] leading-snug break-words">${activeBeadObj.name}</div>
         </div>
       </div>
-      <div class="text-[12px] text-stone-400 shrink-0 text-right">
+      <div class="text-[12px] text-[#6E675F] shrink-0 text-right">
         <div>Rivals ${state.profile.ownedRivals.length}/5</div>
         <div>Trophies ${state.profile.unlocked.length}/${ACHIEVEMENTS.length}</div>
       </div>
@@ -275,18 +275,18 @@ export class ModalManager {
         const owned = state.profile.ownedRivals.includes(key);
         const canAfford = state.profile.points >= prof.unlockCost;
         const card = document.createElement('div');
-        card.className = `p-2.5 rounded-xl border flex items-center justify-between gap-2.5 ${owned ? 'bg-[#2a241e] border-emerald-400/30' : 'bg-[#2a241e] border-white/10'}`;
+        card.className = `p-2.5 rounded-xl border flex items-center justify-between gap-2.5 ${owned ? 'bg-white border-emerald-700/25' : 'bg-white border-[#161616]/10'}`;
         card.innerHTML = `
           <div class="flex items-center gap-2.5 min-w-0">
-            <img src="${prof.avatar}" alt="${prof.name}" class="w-10 h-10 rounded-full object-cover border border-amber-400/40 shrink-0" />
+            <img src="${prof.avatar}" alt="${prof.name}" class="w-10 h-10 rounded-full object-cover border border-[#161616]/20 shrink-0" />
             <div class="min-w-0">
-              <div class="text-xs font-bold text-stone-100">${prof.name} • ${prof.label}</div>
-              <div class="text-[13px] text-stone-400 leading-snug">${prof.title} • Win +$${prof.winPrize} / Lose -$${prof.losePenalty}</div>
+              <div class="text-xs font-bold text-[#161616]">${prof.name} • ${prof.label}</div>
+              <div class="text-[13px] text-[#6E675F] leading-snug">${prof.title} • Win +$${prof.winPrize} / Lose -$${prof.losePenalty}</div>
             </div>
           </div>
           <button type="button" data-buyrival="${key}" class="px-2.5 py-1.5 rounded-lg text-[13px] font-bold shrink-0 transition ${
-            owned ? 'bg-emerald-500/20 text-emerald-200 border border-emerald-400/40' :
-            canAfford ? 'bg-amber-500 hover:bg-amber-400 text-stone-950' : 'bg-stone-800 text-stone-500 cursor-not-allowed'
+            owned ? 'bg-emerald-700/15 text-emerald-900 border border-emerald-700/30' :
+            canAfford ? 'bg-[#161616] hover:bg-[#2C2C2C] text-white' : 'bg-stone-800 text-[#8A8279] cursor-not-allowed'
           }">${owned ? 'Play' : `$${prof.unlockCost}`}</button>
         `;
         body.appendChild(card);
@@ -296,18 +296,18 @@ export class ModalManager {
         const owned = state.profile.ownedPuzzlePacks.includes(key);
         const canAfford = state.profile.points >= pack.packCost;
         const card = document.createElement('div');
-        card.className = `p-2.5 rounded-xl border flex items-center justify-between gap-2.5 ${owned ? 'bg-[#2a241e] border-emerald-400/30' : 'bg-[#2a241e] border-white/10'}`;
+        card.className = `p-2.5 rounded-xl border flex items-center justify-between gap-2.5 ${owned ? 'bg-white border-emerald-700/25' : 'bg-white border-[#161616]/10'}`;
         card.innerHTML = `
           <div class="flex items-center gap-2.5 min-w-0">
-            <div class="w-9 h-9 rounded-lg bg-emerald-500/15 border border-emerald-400/30 flex items-center justify-center text-lg shrink-0">🧩</div>
+            <div class="w-9 h-9 rounded-lg bg-emerald-700/10 border border-emerald-700/25 flex items-center justify-center text-lg shrink-0"></div>
             <div class="min-w-0">
-              <div class="text-xs font-bold text-stone-100">${pack.packName}</div>
-              <div class="text-[13px] text-stone-400 leading-snug">${pack.drills.length} puzzles • Pays $${pack.puzzleReward} each</div>
+              <div class="text-xs font-bold text-[#161616]">${pack.packName}</div>
+              <div class="text-[13px] text-[#6E675F] leading-snug">${pack.drills.length} puzzles • Pays $${pack.puzzleReward} each</div>
             </div>
           </div>
           <button type="button" data-buypack="${key}" class="px-2.5 py-1.5 rounded-lg text-[13px] font-bold shrink-0 transition ${
-            owned ? 'bg-emerald-500/20 text-emerald-200 border border-emerald-400/40' :
-            canAfford ? 'bg-amber-500 hover:bg-amber-400 text-stone-950' : 'bg-stone-800 text-stone-500 cursor-not-allowed'
+            owned ? 'bg-emerald-700/15 text-emerald-900 border border-emerald-700/30' :
+            canAfford ? 'bg-[#161616] hover:bg-[#2C2C2C] text-white' : 'bg-stone-800 text-[#8A8279] cursor-not-allowed'
           }">${owned ? 'Open' : `$${pack.packCost}`}</button>
         `;
         body.appendChild(card);
@@ -316,16 +316,16 @@ export class ModalManager {
       for (const ach of ACHIEVEMENTS) {
         const done = state.profile.unlocked.includes(ach.id);
         const card = document.createElement('div');
-        card.className = `p-2.5 rounded-xl border flex items-center justify-between gap-2.5 ${done ? 'bg-emerald-500/10 border-emerald-400/40' : 'bg-[#2a241e] border-white/10 opacity-85'}`;
+        card.className = `p-2.5 rounded-xl border flex items-center justify-between gap-2.5 ${done ? 'bg-emerald-700/5 border-emerald-700/30' : 'bg-white border-[#161616]/10 opacity-85'}`;
         card.innerHTML = `
           <div class="flex items-center gap-2.5 min-w-0">
-            <div class="w-9 h-9 rounded-lg flex items-center justify-center text-lg shrink-0 ${done ? 'bg-emerald-500/20' : 'bg-black/25'}">${ach.icon}</div>
+            <div class="w-9 h-9 rounded-lg flex items-center justify-center text-lg shrink-0 ${done ? 'bg-emerald-700/15' : 'bg-[#EDE7DC]'}">${ach.icon}</div>
             <div class="min-w-0">
-              <div class="text-xs font-bold ${done ? 'text-emerald-200' : 'text-stone-200'} leading-snug break-words">${ach.name}</div>
-              <div class="text-[13px] text-stone-400 leading-snug">${ach.desc}</div>
+              <div class="text-xs font-bold ${done ? 'text-emerald-900' : 'text-[#161616]'} leading-snug break-words">${ach.name}</div>
+              <div class="text-[13px] text-[#6E675F] leading-snug">${ach.desc}</div>
             </div>
           </div>
-          <span class="px-2 py-0.5 rounded-full text-[13px] font-bold shrink-0 ${done ? 'bg-emerald-500/25 text-emerald-300' : 'bg-amber-500/15 text-amber-300'}">${done ? '✓ ' : '+'}$${ach.reward}</span>
+          <span class="px-2 py-0.5 rounded-full text-[13px] font-bold shrink-0 ${done ? 'bg-emerald-500/25 text-emerald-800' : 'bg-[#EDE7DC] text-[#8F6523]'}">${done ? '✓ ' : '+'}$${ach.reward}</span>
         `;
         body.appendChild(card);
       }
@@ -335,7 +335,7 @@ export class ModalManager {
         const equipped = state.profile.activeBead === key;
         const canAfford = state.profile.points >= item.cost;
         const card = document.createElement('div');
-        card.className = `p-2.5 rounded-xl border flex items-center justify-between gap-2.5 ${equipped ? 'bg-amber-500/10 border-amber-400/50' : 'bg-[#2a241e] border-white/10'}`;
+        card.className = `p-2.5 rounded-xl border flex items-center justify-between gap-2.5 ${equipped ? 'bg-[#EDE7DC] border-[#161616]' : 'bg-white border-[#161616]/10'}`;
         card.innerHTML = `
           <div class="flex items-center gap-2.5 min-w-0">
             <div class="flex -space-x-1.5 shrink-0">
@@ -343,14 +343,14 @@ export class ModalManager {
               <span class="w-5 h-5 rounded-full border border-white/40 shadow" style="background:${item.p2.css}"></span>
             </div>
             <div class="min-w-0">
-              <div class="text-xs font-bold text-stone-100">${item.name}</div>
-              <div class="text-[13px] text-stone-400 leading-snug">${item.desc}</div>
+              <div class="text-xs font-bold text-[#161616]">${item.name}</div>
+              <div class="text-[13px] text-[#6E675F] leading-snug">${item.desc}</div>
             </div>
           </div>
           <button type="button" data-buybead="${key}" class="px-2.5 py-1.5 rounded-lg text-[13px] font-bold shrink-0 transition ${
-            equipped ? 'bg-emerald-500/25 text-emerald-200 border border-emerald-400/40' :
-            owned ? 'bg-stone-700 hover:bg-stone-600 text-stone-100' :
-            canAfford ? 'bg-amber-500 hover:bg-amber-400 text-stone-950' : 'bg-stone-800 text-stone-500 cursor-not-allowed'
+            equipped ? 'bg-emerald-500/25 text-emerald-900 border border-emerald-700/30' :
+            owned ? 'bg-stone-700 hover:bg-stone-600 text-[#161616]' :
+            canAfford ? 'bg-[#161616] hover:bg-[#2C2C2C] text-white' : 'bg-stone-800 text-[#8A8279] cursor-not-allowed'
           }">${equipped ? 'Equipped' : owned ? 'Equip' : `$${item.cost}`}</button>
         `;
         body.appendChild(card);
@@ -361,19 +361,19 @@ export class ModalManager {
         const equipped = state.profile.activeBoard === key;
         const canAfford = state.profile.points >= item.cost;
         const card = document.createElement('div');
-        card.className = `p-2.5 rounded-xl border flex items-center justify-between gap-2.5 ${equipped ? 'bg-amber-500/10 border-amber-400/50' : 'bg-[#2a241e] border-white/10'}`;
+        card.className = `p-2.5 rounded-xl border flex items-center justify-between gap-2.5 ${equipped ? 'bg-[#EDE7DC] border-[#161616]' : 'bg-white border-[#161616]/10'}`;
         card.innerHTML = `
           <div class="flex items-center gap-2.5 min-w-0">
             <div class="w-8 h-8 rounded-lg border shrink-0 shadow" style="background:linear-gradient(135deg,${item.bg0},${item.bg2});border-color:${item.border}"></div>
             <div class="min-w-0">
-              <div class="text-xs font-bold text-stone-100">${item.name}</div>
-              <div class="text-[13px] text-stone-400 leading-snug">${item.desc}</div>
+              <div class="text-xs font-bold text-[#161616]">${item.name}</div>
+              <div class="text-[13px] text-[#6E675F] leading-snug">${item.desc}</div>
             </div>
           </div>
           <button type="button" data-buyboard="${key}" class="px-2.5 py-1.5 rounded-lg text-[13px] font-bold shrink-0 transition ${
-            equipped ? 'bg-emerald-500/25 text-emerald-200 border border-emerald-400/40' :
-            owned ? 'bg-stone-700 hover:bg-stone-600 text-stone-100' :
-            canAfford ? 'bg-amber-500 hover:bg-amber-400 text-stone-950' : 'bg-stone-800 text-stone-500 cursor-not-allowed'
+            equipped ? 'bg-emerald-500/25 text-emerald-900 border border-emerald-700/30' :
+            owned ? 'bg-stone-700 hover:bg-stone-600 text-[#161616]' :
+            canAfford ? 'bg-[#161616] hover:bg-[#2C2C2C] text-white' : 'bg-stone-800 text-[#8A8279] cursor-not-allowed'
           }">${equipped ? 'Equipped' : owned ? 'Equip' : `$${item.cost}`}</button>
         `;
         body.appendChild(card);
@@ -391,13 +391,13 @@ export class ModalManager {
     Object.values(MENTOR_CURRICULUM).forEach((p) => (totalPuzzles += p.drills.length));
     const solvedCount = state.profile.solvedPuzzles.length;
     const prog = document.createElement('div');
-    prog.className = 'p-2.5 rounded-xl bg-black/25 border border-emerald-400/25 flex items-center justify-between gap-3';
+    prog.className = 'p-2.5 rounded-xl bg-[#EDE7DC] border border-emerald-400/25 flex items-center justify-between gap-3';
     prog.innerHTML = `
       <div>
-        <div class="text-xs font-bold text-emerald-200">Puzzle Mastery</div>
-        <div class="text-[13px] text-stone-400">Solve puzzles to earn cash for the Store</div>
+        <div class="text-xs font-bold text-emerald-900">Puzzle Mastery</div>
+        <div class="text-[13px] text-[#6E675F]">Solve puzzles to earn cash for the Store</div>
       </div>
-      <span class="px-2.5 py-1 rounded-full bg-emerald-500/20 text-xs font-bold text-emerald-300 shrink-0">${solvedCount}/${totalPuzzles}</span>
+      <span class="px-2.5 py-1 rounded-full bg-emerald-700/15 text-xs font-bold text-emerald-800 shrink-0">${solvedCount}/${totalPuzzles}</span>
     `;
     body.appendChild(prog);
 
@@ -405,15 +405,15 @@ export class ModalManager {
       const owned = state.profile.ownedPuzzlePacks.includes(tierKey);
       const canAfford = state.profile.points >= pack.packCost;
       const sec = document.createElement('div');
-      sec.className = 'p-3 rounded-xl bg-[#2a241e] border border-white/10 space-y-2';
+      sec.className = 'p-3 rounded-xl bg-white border border-[#161616]/10 space-y-2';
       let headerHtml = `
         <div class="flex items-center justify-between gap-2">
           <div>
-            <div class="text-xs font-bold text-emerald-200">${pack.packName}</div>
-            <div class="text-[12px] text-stone-400">Reward: $${pack.puzzleReward} per puzzle</div>
+            <div class="text-xs font-bold text-emerald-900">${pack.packName}</div>
+            <div class="text-[12px] text-[#6E675F]">Reward: $${pack.puzzleReward} per puzzle</div>
           </div>`;
       if (!owned) {
-        headerHtml += `<button type="button" data-unlockpack="${tierKey}" class="px-2.5 py-1 rounded-lg text-[13px] font-bold ${canAfford ? 'bg-amber-500 hover:bg-amber-400 text-stone-950' : 'bg-stone-800 text-stone-500 cursor-not-allowed'}">Unlock $${pack.packCost}</button>`;
+        headerHtml += `<button type="button" data-unlockpack="${tierKey}" class="px-2.5 py-1 rounded-lg text-[13px] font-bold ${canAfford ? 'bg-[#161616] hover:bg-[#2C2C2C] text-white' : 'bg-stone-800 text-[#8A8279] cursor-not-allowed'}">Unlock $${pack.packCost}</button>`;
       }
       headerHtml += '</div>';
       sec.innerHTML = headerHtml;
@@ -427,10 +427,10 @@ export class ModalManager {
           const btn = document.createElement('button');
           btn.type = 'button';
           btn.dataset.startpuzzle = `${tierKey}:${idx}`;
-          btn.className = 'p-2 rounded-lg bg-black/25 hover:bg-emerald-500/15 border border-white/10 flex items-center justify-between text-left transition';
+          btn.className = 'p-2 rounded-lg bg-[#EDE7DC] hover:bg-emerald-700/10 border border-[#161616]/10 flex items-center justify-between text-left transition';
           btn.innerHTML = `
-            <span class="text-xs font-medium text-stone-200">${d.title}</span>
-            <span class="text-[12px] font-bold px-2 py-0.5 rounded-full ${solved ? 'bg-emerald-500/20 text-emerald-300' : 'bg-amber-500/20 text-amber-300'}">${solved ? '✓ Solved' : `+$${pack.puzzleReward}`}</span>
+            <span class="text-xs font-medium text-[#161616]">${d.title}</span>
+            <span class="text-[12px] font-bold px-2 py-0.5 rounded-full ${solved ? 'bg-emerald-700/15 text-emerald-800' : 'bg-[#161616] text-white text-[#8F6523]'}">${solved ? '✓ Solved' : `+$${pack.puzzleReward}`}</span>
           `;
           grid.appendChild(btn);
         });
@@ -489,16 +489,16 @@ export class ModalManager {
     for (const ach of ACHIEVEMENTS) {
       const done = state.profile.unlocked.includes(ach.id);
       const card = document.createElement('div');
-      card.className = `p-2.5 rounded-xl border flex items-center justify-between gap-2.5 ${done ? 'bg-emerald-500/10 border-emerald-400/40' : 'bg-[#2a241e] border-white/10 opacity-85'}`;
+      card.className = `p-2.5 rounded-xl border flex items-center justify-between gap-2.5 ${done ? 'bg-emerald-700/5 border-emerald-700/30' : 'bg-white border-[#161616]/10 opacity-85'}`;
       card.innerHTML = `
         <div class="flex items-center gap-2.5 min-w-0">
-          <div class="w-9 h-9 rounded-lg flex items-center justify-center text-lg shrink-0 ${done ? 'bg-emerald-500/20' : 'bg-black/25'}">${ach.icon}</div>
+          <div class="w-9 h-9 rounded-lg flex items-center justify-center text-lg shrink-0 ${done ? 'bg-emerald-700/15' : 'bg-[#EDE7DC]'}">${ach.icon}</div>
           <div class="min-w-0">
-            <div class="text-xs font-bold ${done ? 'text-emerald-200' : 'text-stone-200'} leading-snug break-words">${ach.name}</div>
-            <div class="text-[13px] text-stone-400 leading-snug">${ach.desc}</div>
+            <div class="text-xs font-bold ${done ? 'text-emerald-900' : 'text-[#161616]'} leading-snug break-words">${ach.name}</div>
+            <div class="text-[13px] text-[#6E675F] leading-snug">${ach.desc}</div>
           </div>
         </div>
-        <span class="px-2 py-0.5 rounded-full text-[13px] font-bold shrink-0 ${done ? 'bg-emerald-500/25 text-emerald-300' : 'bg-amber-500/15 text-amber-300'}">${done ? '✓ ' : '+'}$${ach.reward}</span>
+        <span class="px-2 py-0.5 rounded-full text-[13px] font-bold shrink-0 ${done ? 'bg-emerald-500/25 text-emerald-800' : 'bg-[#EDE7DC] text-[#8F6523]'}">${done ? '✓ ' : '+'}$${ach.reward}</span>
       `;
       body.appendChild(card);
     }
