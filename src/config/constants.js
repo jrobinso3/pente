@@ -393,36 +393,666 @@ export const MENTOR_CURRICULUM = {
     intro: 'Build lines near the center and watch for pairs (2 adjacent stones) that can be bracketed.',
     drills: [
       {
-        title: 'Drill 1: Spot the Capture',
-        prompt: 'Red has two adjacent stones in a row. Play at the open end to bracket and capture the pair!',
-        stones: [
-          [9, 9, BLACK], [9, 10, WHITE], [8, 8, BLACK], [9, 11, WHITE]
-        ],
-        humanCaps: 0, aiCaps: 0, turn: BLACK,
-        goalCoord: [9, 12],
-        successMsg: 'Nice! Bracketing two enemy stones removes them and scores 1 of 5 needed captures.'
+            title: "Drill 1: Horizontal Pair Capture",
+            prompt: "Red has two adjacent stones in a row. Play at the open end to bracket and capture the pair!",
+            stones: [
+                  [
+                        9,
+                        9,
+                        1
+                  ],
+                  [
+                        9,
+                        10,
+                        2
+                  ],
+                  [
+                        8,
+                        8,
+                        1
+                  ],
+                  [
+                        9,
+                        11,
+                        2
+                  ]
+            ],
+            humanCaps: 0,
+            aiCaps: 0,
+            turn: 1,
+            goalCoord: [
+                  9,
+                  12
+            ],
+            successMsg: "Clean capture! Bracketing two enemy stones removes them and scores 1 of 5 needed pairs."
       },
       {
-        title: 'Drill 2: Safe Gap (No Self-Capture)',
-        prompt: 'Playing between two Red stones next to your own forms a pair, but you cannot capture yourself. Connect safely!',
-        stones: [
-          [9, 9, BLACK], [9, 8, WHITE], [9, 11, WHITE], [10, 10, BLACK]
-        ],
-        humanCaps: 0, aiCaps: 0, turn: BLACK,
-        goalCoord: [9, 10],
-        successMsg: 'Safe! Moving into a bracketed pair does not self-capture in Pente.'
+            title: "Drill 2: Vertical Pair Capture",
+            prompt: "Bracket the two Red stones stacked vertically on column J to score a capture.",
+            stones: [
+                  [
+                        9,
+                        9,
+                        1
+                  ],
+                  [
+                        10,
+                        9,
+                        2
+                  ],
+                  [
+                        11,
+                        9,
+                        2
+                  ],
+                  [
+                        8,
+                        11,
+                        1
+                  ]
+            ],
+            humanCaps: 0,
+            aiCaps: 0,
+            turn: 1,
+            goalCoord: [
+                  12,
+                  9
+            ],
+            successMsg: "Nice! Captures work vertically just like horizontally."
       },
       {
-        title: 'Drill 3: Double Capture Snap',
-        prompt: 'One intersection brackets TWO separate Red pairs at the same time! Find the spot to capture 4 beads in one move.',
-        stones: [
-          [9, 9, BLACK], [9, 10, WHITE], [9, 11, WHITE], [12, 12, BLACK], [11, 12, WHITE], [10, 12, WHITE]
-        ],
-        humanCaps: 0, aiCaps: 0, turn: BLACK,
-        goalCoord: [9, 12],
-        successMsg: 'Double capture! You can take two or more pairs in a single move.'
+            title: "Drill 3: Diagonal Pair Capture",
+            prompt: "Spot the diagonal pair! Close the bracket along the main diagonal.",
+            stones: [
+                  [
+                        9,
+                        9,
+                        1
+                  ],
+                  [
+                        8,
+                        8,
+                        2
+                  ],
+                  [
+                        7,
+                        7,
+                        2
+                  ],
+                  [
+                        10,
+                        8,
+                        1
+                  ]
+            ],
+            humanCaps: 0,
+            aiCaps: 0,
+            turn: 1,
+            goalCoord: [
+                  6,
+                  6
+            ],
+            successMsg: "Sharp diagonal vision! Always scan all 8 directions for pairs."
+      },
+      {
+            title: "Drill 4: Reverse Diagonal Capture",
+            prompt: "Red left an exposed pair on the anti-diagonal. Snap it off the board!",
+            stones: [
+                  [
+                        9,
+                        9,
+                        1
+                  ],
+                  [
+                        8,
+                        10,
+                        2
+                  ],
+                  [
+                        7,
+                        11,
+                        2
+                  ],
+                  [
+                        11,
+                        9,
+                        1
+                  ]
+            ],
+            humanCaps: 0,
+            aiCaps: 0,
+            turn: 1,
+            goalCoord: [
+                  6,
+                  12
+            ],
+            successMsg: "Captured! Keeping an eye on diagonals catches many opponents off guard."
+      },
+      {
+            title: "Drill 5: Safe Gap (No Self-Capture)",
+            prompt: "Playing between two Red stones next to your own forms a pair, but you cannot self-capture. Connect safely!",
+            stones: [
+                  [
+                        9,
+                        9,
+                        1
+                  ],
+                  [
+                        9,
+                        8,
+                        2
+                  ],
+                  [
+                        9,
+                        11,
+                        2
+                  ],
+                  [
+                        10,
+                        10,
+                        1
+                  ]
+            ],
+            humanCaps: 0,
+            aiCaps: 0,
+            turn: 1,
+            goalCoord: [
+                  9,
+                  10
+            ],
+            successMsg: "Safe! Moving into a bracketed pair does not self-capture in Pente."
+      },
+      {
+            title: "Drill 6: Diagonal Safe Bridge",
+            prompt: "Connect your two diagonal stones through the gap between Red's beads without fear of self-capture.",
+            stones: [
+                  [
+                        9,
+                        9,
+                        1
+                  ],
+                  [
+                        8,
+                        8,
+                        2
+                  ],
+                  [
+                        11,
+                        11,
+                        2
+                  ],
+                  [
+                        7,
+                        10,
+                        1
+                  ]
+            ],
+            humanCaps: 0,
+            aiCaps: 0,
+            turn: 1,
+            goalCoord: [
+                  10,
+                  10
+            ],
+            successMsg: "Well played! Only an opponent's move can trigger a capture against your pair."
+      },
+      {
+            title: "Drill 7: Complete Five in a Row",
+            prompt: "You have four blue beads in a line. Place the fifth bead to win immediately!",
+            stones: [
+                  [
+                        9,
+                        9,
+                        1
+                  ],
+                  [
+                        9,
+                        10,
+                        1
+                  ],
+                  [
+                        9,
+                        11,
+                        1
+                  ],
+                  [
+                        9,
+                        12,
+                        1
+                  ],
+                  [
+                        8,
+                        10,
+                        2
+                  ],
+                  [
+                        10,
+                        10,
+                        2
+                  ],
+                  [
+                        11,
+                        11,
+                        2
+                  ]
+            ],
+            humanCaps: 0,
+            aiCaps: 0,
+            turn: 1,
+            goalCoords: [
+                  [
+                        9,
+                        8
+                  ],
+                  [
+                        9,
+                        13
+                  ]
+            ],
+            successMsg: "Five in a row! An unbroken line of 5 wins the game on the spot."
+      },
+      {
+            title: "Drill 8: Fill the Gap for Five",
+            prompt: "One empty intersection splits your four beads. Fill the gap to complete 5-in-a-row!",
+            stones: [
+                  [
+                        7,
+                        7,
+                        1
+                  ],
+                  [
+                        8,
+                        8,
+                        1
+                  ],
+                  [
+                        10,
+                        10,
+                        1
+                  ],
+                  [
+                        11,
+                        11,
+                        1
+                  ],
+                  [
+                        9,
+                        7,
+                        2
+                  ],
+                  [
+                        8,
+                        10,
+                        2
+                  ],
+                  [
+                        11,
+                        8,
+                        2
+                  ]
+            ],
+            humanCaps: 0,
+            aiCaps: 0,
+            turn: 1,
+            goalCoord: [
+                  9,
+                  9
+            ],
+            successMsg: "Direct hit! Always check if a single gap connects 5."
+      },
+      {
+            title: "Drill 9: Broken Four Finish",
+            prompt: "Your vertical line has 3 stones, a gap, and 1 stone. Drop the bead in the gap to win!",
+            stones: [
+                  [
+                        6,
+                        9,
+                        1
+                  ],
+                  [
+                        7,
+                        9,
+                        1
+                  ],
+                  [
+                        8,
+                        9,
+                        1
+                  ],
+                  [
+                        10,
+                        9,
+                        1
+                  ],
+                  [
+                        7,
+                        10,
+                        2
+                  ],
+                  [
+                        8,
+                        10,
+                        2
+                  ],
+                  [
+                        9,
+                        7,
+                        2
+                  ]
+            ],
+            humanCaps: 0,
+            aiCaps: 0,
+            turn: 1,
+            goalCoord: [
+                  9,
+                  9
+            ],
+            successMsg: "Victory! Gapped fours are easy to miss\u2014scan every line."
+      },
+      {
+            title: "Drill 10: Fifth Pair Wins",
+            prompt: "You already have 4 captured pairs! Capture one more Red pair to reach 5 and win.",
+            stones: [
+                  [
+                        9,
+                        9,
+                        1
+                  ],
+                  [
+                        10,
+                        10,
+                        2
+                  ],
+                  [
+                        11,
+                        11,
+                        2
+                  ],
+                  [
+                        8,
+                        10,
+                        1
+                  ],
+                  [
+                        7,
+                        11,
+                        2
+                  ]
+            ],
+            humanCaps: 4,
+            aiCaps: 1,
+            turn: 1,
+            goalCoord: [
+                  12,
+                  12
+            ],
+            successMsg: "5th pair captured! Reaching 5 captures wins immediately."
+      },
+      {
+            title: "Drill 11: Win by Capture Over Block",
+            prompt: "Red threatens a line, but you have 4 captures. Find the winning 5th capture instead!",
+            stones: [
+                  [
+                        9,
+                        9,
+                        1
+                  ],
+                  [
+                        9,
+                        8,
+                        2
+                  ],
+                  [
+                        9,
+                        7,
+                        2
+                  ],
+                  [
+                        6,
+                        10,
+                        2
+                  ],
+                  [
+                        7,
+                        10,
+                        2
+                  ],
+                  [
+                        8,
+                        10,
+                        2
+                  ],
+                  [
+                        10,
+                        10,
+                        1
+                  ]
+            ],
+            humanCaps: 4,
+            aiCaps: 2,
+            turn: 1,
+            goalCoord: [
+                  9,
+                  6
+            ],
+            successMsg: "Game over! A winning 5th capture beats defending."
+      },
+      {
+            title: "Drill 12: Edge-Line Capture",
+            prompt: "Capture the Red pair near the side of the board before they connect.",
+            stones: [
+                  [
+                        9,
+                        3,
+                        1
+                  ],
+                  [
+                        9,
+                        2,
+                        2
+                  ],
+                  [
+                        9,
+                        1,
+                        2
+                  ],
+                  [
+                        10,
+                        9,
+                        1
+                  ],
+                  [
+                        8,
+                        8,
+                        2
+                  ]
+            ],
+            humanCaps: 0,
+            aiCaps: 0,
+            turn: 1,
+            goalCoord: [
+                  9,
+                  0
+            ],
+            successMsg: "Even the very edge of the board can be used to complete a capture!"
+      },
+      {
+            title: "Drill 13: Double Capture Snap",
+            prompt: "One intersection brackets TWO separate Red pairs at once! Capture 4 beads in one move.",
+            stones: [
+                  [
+                        9,
+                        9,
+                        1
+                  ],
+                  [
+                        9,
+                        10,
+                        2
+                  ],
+                  [
+                        9,
+                        11,
+                        2
+                  ],
+                  [
+                        12,
+                        12,
+                        1
+                  ],
+                  [
+                        11,
+                        12,
+                        2
+                  ],
+                  [
+                        10,
+                        12,
+                        2
+                  ]
+            ],
+            humanCaps: 0,
+            aiCaps: 0,
+            turn: 1,
+            goalCoord: [
+                  9,
+                  12
+            ],
+            successMsg: "Double capture! One move can take two or more pairs simultaneously."
+      },
+      {
+            title: "Drill 14: Cross-Axis Double Capture",
+            prompt: "Find the corner intersection that captures both a vertical and a diagonal pair!",
+            stones: [
+                  [
+                        9,
+                        9,
+                        1
+                  ],
+                  [
+                        8,
+                        9,
+                        2
+                  ],
+                  [
+                        7,
+                        9,
+                        2
+                  ],
+                  [
+                        9,
+                        12,
+                        1
+                  ],
+                  [
+                        8,
+                        11,
+                        2
+                  ],
+                  [
+                        7,
+                        10,
+                        2
+                  ]
+            ],
+            humanCaps: 0,
+            aiCaps: 0,
+            turn: 1,
+            goalCoord: [
+                  6,
+                  9
+            ],
+            successMsg: "4 beads gone in one move! Cross-axis double captures swing games fast."
+      },
+      {
+            title: "Drill 15: Twin Diagonal Capture",
+            prompt: "Two diagonal Red pairs converge on one empty point. Strike the meeting point!",
+            stones: [
+                  [
+                        11,
+                        7,
+                        1
+                  ],
+                  [
+                        10,
+                        8,
+                        2
+                  ],
+                  [
+                        9,
+                        9,
+                        2
+                  ],
+                  [
+                        11,
+                        13,
+                        1
+                  ],
+                  [
+                        10,
+                        12,
+                        2
+                  ],
+                  [
+                        9,
+                        11,
+                        2
+                  ]
+            ],
+            humanCaps: 0,
+            aiCaps: 0,
+            turn: 1,
+            goalCoord: [
+                  8,
+                  10
+            ],
+            successMsg: "Masterful! Both diagonal pairs vanished in a single stroke."
+      },
+      {
+            title: "Drill 16: Capture + Five Setup",
+            prompt: "Capture Red's pair on row 10 to clear space and extend your own line.",
+            stones: [
+                  [
+                        9,
+                        9,
+                        1
+                  ],
+                  [
+                        9,
+                        10,
+                        2
+                  ],
+                  [
+                        9,
+                        11,
+                        2
+                  ],
+                  [
+                        8,
+                        12,
+                        1
+                  ],
+                  [
+                        7,
+                        12,
+                        1
+                  ],
+                  [
+                        10,
+                        11,
+                        2
+                  ]
+            ],
+            humanCaps: 0,
+            aiCaps: 0,
+            turn: 1,
+            goalCoord: [
+                  9,
+                  12
+            ],
+            successMsg: "You captured 2 stones AND connected 3 in a row on column 12!"
       }
-    ]
+]
   },
   club: {
     packName: 'Tactician Puzzle Pack', packCost: 80, puzzleReward: 25,
@@ -431,115 +1061,2542 @@ export const MENTOR_CURRICULUM = {
     intro: 'Never ignore an unblocked 3-in-a-row—block one end immediately unless you have a stronger 4 or win.',
     drills: [
       {
-        title: 'Drill 1: Stop the Open Three',
-        prompt: 'Red has 3 stones with both ends open! Block one end now before Red creates an unstoppable 4 (tessera).',
-        stones: [
-          [9, 9, BLACK], [8, 8, WHITE], [7, 7, BLACK], [8, 9, WHITE], [10, 10, BLACK], [8, 10, WHITE]
-        ],
-        humanCaps: 0, aiCaps: 0, turn: BLACK,
-        goalCoords: [[8, 7], [8, 11]],
-        successMsg: 'Great block! Stopping an open three prevents an automatic loss next turn.'
+            title: "Drill 1: Stop the Open Three",
+            prompt: "Red has 3 stones with both ends open! Block one end now before Red creates an unstoppable 4.",
+            stones: [
+                  [
+                        9,
+                        9,
+                        1
+                  ],
+                  [
+                        8,
+                        8,
+                        2
+                  ],
+                  [
+                        7,
+                        7,
+                        1
+                  ],
+                  [
+                        8,
+                        9,
+                        2
+                  ],
+                  [
+                        10,
+                        10,
+                        1
+                  ],
+                  [
+                        8,
+                        10,
+                        2
+                  ]
+            ],
+            humanCaps: 0,
+            aiCaps: 0,
+            turn: 1,
+            goalCoords: [
+                  [
+                        8,
+                        7
+                  ],
+                  [
+                        8,
+                        11
+                  ]
+            ],
+            successMsg: "Great block! Stopping an open three prevents an automatic loss next turn."
       },
       {
-        title: 'Drill 2: Gapped Three Threat',
-        prompt: 'Three stones with a 1-space gap (X X _ X) are just as dangerous as a solid three. Fill the gap to block!',
-        stones: [
-          [9, 9, BLACK], [10, 8, WHITE], [7, 9, BLACK], [10, 9, WHITE], [11, 7, BLACK], [10, 11, WHITE]
-        ],
-        humanCaps: 0, aiCaps: 0, turn: BLACK,
-        goalCoord: [10, 10],
-        successMsg: 'Sharp eye! Blocking inside the gap neutralizes the gapped three.'
+            title: "Drill 2: Block Vertical Open Three",
+            prompt: "Red quietly built an open three vertically. Seal one end immediately!",
+            stones: [
+                  [
+                        9,
+                        9,
+                        1
+                  ],
+                  [
+                        7,
+                        11,
+                        2
+                  ],
+                  [
+                        8,
+                        11,
+                        2
+                  ],
+                  [
+                        9,
+                        11,
+                        2
+                  ],
+                  [
+                        10,
+                        8,
+                        1
+                  ],
+                  [
+                        11,
+                        9,
+                        1
+                  ]
+            ],
+            humanCaps: 0,
+            aiCaps: 0,
+            turn: 1,
+            goalCoords: [
+                  [
+                        6,
+                        11
+                  ],
+                  [
+                        10,
+                        11
+                  ]
+            ],
+            successMsg: "Blocked! Never let an open three go unanswered."
       },
       {
-        title: 'Drill 3: Shatter with a Capture',
-        prompt: 'Red is building on column 10, leaving two Red beads exposed horizontally! Capture them to steal tempo.',
-        stones: [
-          [9, 9, BLACK], [9, 10, WHITE], [8, 10, WHITE], [9, 11, WHITE], [10, 10, WHITE], [11, 8, BLACK]
-        ],
-        humanCaps: 0, aiCaps: 0, turn: BLACK,
-        goalCoord: [9, 12],
-        successMsg: 'Nice! Capturing Red\'s pair breaks up their central formation.'
+            title: "Drill 3: Block Diagonal Open Three",
+            prompt: "Spot the diagonal open three! Block either open end before it becomes a tessera.",
+            stones: [
+                  [
+                        9,
+                        9,
+                        1
+                  ],
+                  [
+                        7,
+                        8,
+                        2
+                  ],
+                  [
+                        8,
+                        9,
+                        1
+                  ],
+                  [
+                        8,
+                        7,
+                        2
+                  ],
+                  [
+                        9,
+                        6,
+                        2
+                  ],
+                  [
+                        11,
+                        10,
+                        1
+                  ]
+            ],
+            humanCaps: 0,
+            aiCaps: 0,
+            turn: 1,
+            goalCoords: [
+                  [
+                        6,
+                        9
+                  ],
+                  [
+                        10,
+                        5
+                  ]
+            ],
+            successMsg: "Nice diagonal defense!"
+      },
+      {
+            title: "Drill 4: Gapped Three Threat",
+            prompt: "Three stones with a 1-space gap (O O _ O) are just as dangerous as a solid three. Fill the gap!",
+            stones: [
+                  [
+                        9,
+                        9,
+                        1
+                  ],
+                  [
+                        10,
+                        8,
+                        2
+                  ],
+                  [
+                        7,
+                        9,
+                        1
+                  ],
+                  [
+                        10,
+                        9,
+                        2
+                  ],
+                  [
+                        11,
+                        7,
+                        1
+                  ],
+                  [
+                        10,
+                        11,
+                        2
+                  ]
+            ],
+            humanCaps: 0,
+            aiCaps: 0,
+            turn: 1,
+            goalCoord: [
+                  10,
+                  10
+            ],
+            successMsg: "Sharp eye! Blocking inside the gap neutralizes the gapped three."
+      },
+      {
+            title: "Drill 5: Diagonal Gapped Three",
+            prompt: "Red has a gapped three along the diagonal (O _ O O). Plug the interior gap!",
+            stones: [
+                  [
+                        9,
+                        9,
+                        1
+                  ],
+                  [
+                        5,
+                        5,
+                        2
+                  ],
+                  [
+                        7,
+                        7,
+                        2
+                  ],
+                  [
+                        8,
+                        8,
+                        2
+                  ],
+                  [
+                        10,
+                        8,
+                        1
+                  ],
+                  [
+                        11,
+                        9,
+                        1
+                  ]
+            ],
+            humanCaps: 0,
+            aiCaps: 0,
+            turn: 1,
+            goalCoord: [
+                  6,
+                  6
+            ],
+            successMsg: "Blocking at the gap stops the diagonal tessera cold."
+      },
+      {
+            title: "Drill 6: Shatter with a Capture",
+            prompt: "Red is building on column 10, leaving two Red beads exposed horizontally! Capture them to break the line.",
+            stones: [
+                  [
+                        9,
+                        9,
+                        1
+                  ],
+                  [
+                        9,
+                        10,
+                        2
+                  ],
+                  [
+                        8,
+                        10,
+                        2
+                  ],
+                  [
+                        9,
+                        11,
+                        2
+                  ],
+                  [
+                        10,
+                        10,
+                        2
+                  ],
+                  [
+                        11,
+                        8,
+                        1
+                  ]
+            ],
+            humanCaps: 0,
+            aiCaps: 0,
+            turn: 1,
+            goalCoord: [
+                  9,
+                  12
+            ],
+            successMsg: "Brilliant! Capturing out of an opponent's line breaks their threat AND scores a pair."
+      },
+      {
+            title: "Drill 7: Shatter a Four by Capture",
+            prompt: "Red has 4 in a row vertically on column 9, AND two Red stones on row 8 are exposed! Capture them to break the 4.",
+            stones: [
+                  [
+                        6,
+                        9,
+                        2
+                  ],
+                  [
+                        7,
+                        9,
+                        2
+                  ],
+                  [
+                        8,
+                        9,
+                        2
+                  ],
+                  [
+                        9,
+                        9,
+                        2
+                  ],
+                  [
+                        8,
+                        7,
+                        1
+                  ],
+                  [
+                        8,
+                        8,
+                        2
+                  ],
+                  [
+                        10,
+                        10,
+                        1
+                  ]
+            ],
+            humanCaps: 0,
+            aiCaps: 0,
+            turn: 1,
+            goalCoord: [
+                  8,
+                  10
+            ],
+            successMsg: "Genius! Capturing [8,8] and [8,9] removes [8,9] right out of Red's vertical four!"
+      },
+      {
+            title: "Drill 8: Defend by Capturing",
+            prompt: "Red threatens 5 on column 11, but two of Red's stones on row 9 are ripe for capture!",
+            stones: [
+                  [
+                        9,
+                        9,
+                        1
+                  ],
+                  [
+                        9,
+                        10,
+                        2
+                  ],
+                  [
+                        9,
+                        11,
+                        2
+                  ],
+                  [
+                        8,
+                        11,
+                        2
+                  ],
+                  [
+                        10,
+                        11,
+                        2
+                  ],
+                  [
+                        11,
+                        11,
+                        2
+                  ],
+                  [
+                        7,
+                        9,
+                        1
+                  ]
+            ],
+            humanCaps: 0,
+            aiCaps: 0,
+            turn: 1,
+            goalCoord: [
+                  9,
+                  12
+            ],
+            successMsg: "Tempo stolen! Removing [9,11] shatters Red's vertical four."
+      },
+      {
+            title: "Drill 9: Build a Safe Open Three",
+            prompt: "Extend your stones into an open three without leaving a capturable pair.",
+            stones: [
+                  [
+                        9,
+                        9,
+                        1
+                  ],
+                  [
+                        9,
+                        10,
+                        1
+                  ],
+                  [
+                        8,
+                        8,
+                        2
+                  ],
+                  [
+                        10,
+                        11,
+                        2
+                  ],
+                  [
+                        7,
+                        7,
+                        1
+                  ]
+            ],
+            humanCaps: 0,
+            aiCaps: 0,
+            turn: 1,
+            goalCoords: [
+                  [
+                        9,
+                        8
+                  ],
+                  [
+                        9,
+                        11
+                  ]
+            ],
+            successMsg: "Three in a row! With 3 stones, you're safe from pair capture."
+      },
+      {
+            title: "Drill 10: Bridge into an Open Four",
+            prompt: "You have 2 stones, a gap, and 1 stone. Fill the gap to create an unstoppable open four (tessera)!",
+            stones: [
+                  [
+                        9,
+                        7,
+                        1
+                  ],
+                  [
+                        9,
+                        8,
+                        1
+                  ],
+                  [
+                        9,
+                        10,
+                        1
+                  ],
+                  [
+                        8,
+                        9,
+                        2
+                  ],
+                  [
+                        10,
+                        9,
+                        2
+                  ],
+                  [
+                        11,
+                        11,
+                        2
+                  ]
+            ],
+            humanCaps: 0,
+            aiCaps: 0,
+            turn: 1,
+            goalCoord: [
+                  9,
+                  9
+            ],
+            successMsg: "Unstoppable tessera! Both ends are open\u2014victory next turn."
+      },
+      {
+            title: "Drill 11: Diagonal Tessera Bridge",
+            prompt: "Bridge your diagonal stones (X _ X X) to form an open four with both ends free!",
+            stones: [
+                  [
+                        7,
+                        7,
+                        1
+                  ],
+                  [
+                        9,
+                        9,
+                        1
+                  ],
+                  [
+                        10,
+                        10,
+                        1
+                  ],
+                  [
+                        8,
+                        10,
+                        2
+                  ],
+                  [
+                        10,
+                        8,
+                        2
+                  ],
+                  [
+                        11,
+                        7,
+                        2
+                  ]
+            ],
+            humanCaps: 0,
+            aiCaps: 0,
+            turn: 1,
+            goalCoord: [
+                  8,
+                  8
+            ],
+            successMsg: "Diagonal tessera! Red can only block one side."
+      },
+      {
+            title: "Drill 12: Block Four Over Capturing",
+            prompt: "Red has 4-in-a-row with one end blocked. Don't get distracted by a side capture\u2014block the open end!",
+            stones: [
+                  [
+                        9,
+                        9,
+                        1
+                  ],
+                  [
+                        9,
+                        10,
+                        2
+                  ],
+                  [
+                        9,
+                        11,
+                        2
+                  ],
+                  [
+                        9,
+                        12,
+                        2
+                  ],
+                  [
+                        9,
+                        13,
+                        2
+                  ],
+                  [
+                        8,
+                        8,
+                        1
+                  ],
+                  [
+                        7,
+                        8,
+                        2
+                  ],
+                  [
+                        6,
+                        8,
+                        2
+                  ]
+            ],
+            humanCaps: 0,
+            aiCaps: 0,
+            turn: 1,
+            goalCoord: [
+                  9,
+                  14
+            ],
+            successMsg: "Crucial discipline! Always stop an immediate 5-in-a-row first."
+      },
+      {
+            title: "Drill 13: Win Faster (5 vs Block)",
+            prompt: "Red has an open three, but you already have 4 in a row! Ignore defense and win immediately.",
+            stones: [
+                  [
+                        9,
+                        9,
+                        1
+                  ],
+                  [
+                        9,
+                        10,
+                        1
+                  ],
+                  [
+                        9,
+                        11,
+                        1
+                  ],
+                  [
+                        9,
+                        12,
+                        1
+                  ],
+                  [
+                        7,
+                        7,
+                        2
+                  ],
+                  [
+                        7,
+                        8,
+                        2
+                  ],
+                  [
+                        7,
+                        9,
+                        2
+                  ]
+            ],
+            humanCaps: 0,
+            aiCaps: 0,
+            turn: 1,
+            goalCoords: [
+                  [
+                        9,
+                        8
+                  ],
+                  [
+                        9,
+                        13
+                  ]
+            ],
+            successMsg: "Winning beats defending! Always check your own 5-in-a-row first."
+      },
+      {
+            title: "Drill 14: Counter-Attack Capture",
+            prompt: "Capture Red's pair on row 6 while simultaneously extending your vertical line!",
+            stones: [
+                  [
+                        6,
+                        6,
+                        1
+                  ],
+                  [
+                        6,
+                        7,
+                        2
+                  ],
+                  [
+                        6,
+                        8,
+                        2
+                  ],
+                  [
+                        7,
+                        9,
+                        1
+                  ],
+                  [
+                        8,
+                        9,
+                        1
+                  ],
+                  [
+                        9,
+                        9,
+                        1
+                  ],
+                  [
+                        10,
+                        10,
+                        2
+                  ]
+            ],
+            humanCaps: 0,
+            aiCaps: 0,
+            turn: 1,
+            goalCoord: [
+                  6,
+                  9
+            ],
+            successMsg: "Two birds, one stone! You scored a capture AND built an open four on column 9."
+      },
+      {
+            title: "Drill 15: Stop Gapped Three on Anti-Diagonal",
+            prompt: "Red has a gapped three along the anti-diagonal. Block the interior gap!",
+            stones: [
+                  [
+                        9,
+                        9,
+                        1
+                  ],
+                  [
+                        11,
+                        6,
+                        2
+                  ],
+                  [
+                        10,
+                        7,
+                        2
+                  ],
+                  [
+                        8,
+                        9,
+                        2
+                  ],
+                  [
+                        7,
+                        7,
+                        1
+                  ],
+                  [
+                        12,
+                        10,
+                        1
+                  ]
+            ],
+            humanCaps: 0,
+            aiCaps: 0,
+            turn: 1,
+            goalCoord: [
+                  9,
+                  8
+            ],
+            successMsg: "Clean block! Anti-diagonal gaps are tricky to spot."
+      },
+      {
+            title: "Drill 16: Capture to Reach 4 Pairs",
+            prompt: "Score a double capture from 2 pairs to jump straight to 4 pairs\u2014one away from winning!",
+            stones: [
+                  [
+                        9,
+                        9,
+                        1
+                  ],
+                  [
+                        9,
+                        10,
+                        2
+                  ],
+                  [
+                        9,
+                        11,
+                        2
+                  ],
+                  [
+                        12,
+                        9,
+                        1
+                  ],
+                  [
+                        11,
+                        10,
+                        2
+                  ],
+                  [
+                        10,
+                        11,
+                        2
+                  ]
+            ],
+            humanCaps: 2,
+            aiCaps: 1,
+            turn: 1,
+            goalCoord: [
+                  9,
+                  12
+            ],
+            successMsg: "Now at 4/5 captures! Red is under massive pressure."
       }
-    ]
+]
   },
   master: {
-    packName: 'Master Puzzle Pack', packCost: 160, puzzleReward: 40,
+    packName: 'Strategist Puzzle Pack', packCost: 160, puzzleReward: 40,
     badge: 'Level 3 • Master',
-    title: 'Tesseras & Double-Threat Forks',
-    intro: 'Create two threats at once (an open three plus a capture or another open three) so the AI cannot block both.',
+    title: 'Tessera & Double-Threat Forks',
+    intro: 'Create simultaneous threats (4-3 forks or double open threes) so your opponent cannot block both.',
     drills: [
       {
-        title: 'Drill 1: Build an Unstoppable Tessera',
-        prompt: 'Extend your line into an open 4-in-a-row (both ends empty). Even if Red blocks one side, you win on the other!',
-        stones: [
-          [9, 9, BLACK], [8, 8, WHITE], [9, 10, BLACK], [8, 9, WHITE], [9, 11, BLACK], [7, 7, WHITE]
-        ],
-        humanCaps: 0, aiCaps: 0, turn: BLACK,
-        goalCoords: [[9, 8], [9, 12]],
-        successMsg: 'Tessera achieved! An unblocked four-in-a-row guarantees a win on the next turn.'
+            title: "Drill 1: Double-Three Fork",
+            prompt: "Play on one intersection to create TWO open threes at the same time!",
+            stones: [
+                  [
+                        9,
+                        9,
+                        1
+                  ],
+                  [
+                        9,
+                        10,
+                        1
+                  ],
+                  [
+                        10,
+                        11,
+                        1
+                  ],
+                  [
+                        11,
+                        11,
+                        1
+                  ],
+                  [
+                        8,
+                        8,
+                        2
+                  ],
+                  [
+                        10,
+                        9,
+                        2
+                  ],
+                  [
+                        12,
+                        12,
+                        2
+                  ]
+            ],
+            humanCaps: 0,
+            aiCaps: 0,
+            turn: 1,
+            goalCoord: [
+                  9,
+                  11
+            ],
+            successMsg: "Devastating fork! Red can only block one of your two open threes."
       },
       {
-        title: 'Drill 2: Fork with Double Open Three',
-        prompt: 'Find the intersection that creates two open threes simultaneously—one horizontal and one diagonal.',
-        stones: [
-          [9, 9, BLACK], [7, 7, WHITE], [9, 10, BLACK], [7, 8, WHITE], [10, 11, BLACK], [12, 12, WHITE], [8, 11, BLACK], [6, 6, WHITE]
-        ],
-        humanCaps: 0, aiCaps: 0, turn: BLACK,
-        goalCoord: [9, 11],
-        successMsg: 'Brilliant fork! Red can only block one of your two open threes.'
+            title: "Drill 2: Diagonal + Horizontal Fork",
+            prompt: "Find the pivot point that turns two separate pairs into simultaneous open threes!",
+            stones: [
+                  [
+                        9,
+                        9,
+                        1
+                  ],
+                  [
+                        9,
+                        10,
+                        1
+                  ],
+                  [
+                        10,
+                        10,
+                        1
+                  ],
+                  [
+                        11,
+                        9,
+                        1
+                  ],
+                  [
+                        8,
+                        9,
+                        2
+                  ],
+                  [
+                        10,
+                        12,
+                        2
+                  ],
+                  [
+                        7,
+                        8,
+                        2
+                  ]
+            ],
+            humanCaps: 0,
+            aiCaps: 0,
+            turn: 1,
+            goalCoord: [
+                  9,
+                  11
+            ],
+            successMsg: "Dual threat! Creating two open threes at once is a classic Master weapon."
       },
       {
-        title: 'Drill 3: Capture + Open Three Fork',
-        prompt: 'Find the move that captures a Red pair vertically AND creates a diagonal open three at the same time!',
-        stones: [
-          [6, 10, BLACK], [7, 10, WHITE], [8, 10, WHITE], [10, 9, BLACK], [11, 8, BLACK], [12, 12, WHITE]
-        ],
-        humanCaps: 0, aiCaps: 0, turn: BLACK,
-        goalCoord: [9, 10],
-        successMsg: 'Dual threat! Capturing while building an open three seizes total control.'
+            title: "Drill 3: Gapped Fork (3 + 3)",
+            prompt: "Fill the shared intersection to activate two gapped threes simultaneously.",
+            stones: [
+                  [
+                        9,
+                        7,
+                        1
+                  ],
+                  [
+                        9,
+                        8,
+                        1
+                  ],
+                  [
+                        7,
+                        10,
+                        1
+                  ],
+                  [
+                        8,
+                        10,
+                        1
+                  ],
+                  [
+                        8,
+                        8,
+                        2
+                  ],
+                  [
+                        10,
+                        9,
+                        2
+                  ],
+                  [
+                        11,
+                        11,
+                        2
+                  ]
+            ],
+            humanCaps: 0,
+            aiCaps: 0,
+            turn: 1,
+            goalCoord: [
+                  9,
+                  10
+            ],
+            successMsg: "Unstoppable! Both row 9 and column 10 now threaten tessera."
+      },
+      {
+            title: "Drill 4: Capture + Open Three",
+            prompt: "Capture Red's pair on column 11 to simultaneously form an open three on row 9!",
+            stones: [
+                  [
+                        9,
+                        9,
+                        1
+                  ],
+                  [
+                        9,
+                        10,
+                        1
+                  ],
+                  [
+                        12,
+                        11,
+                        1
+                  ],
+                  [
+                        11,
+                        11,
+                        2
+                  ],
+                  [
+                        10,
+                        11,
+                        2
+                  ],
+                  [
+                        8,
+                        8,
+                        2
+                  ],
+                  [
+                        7,
+                        7,
+                        2
+                  ]
+            ],
+            humanCaps: 0,
+            aiCaps: 0,
+            turn: 1,
+            goalCoord: [
+                  9,
+                  11
+            ],
+            successMsg: "Capture + tempo! You scored a pair and forced Red to defend."
+      },
+      {
+            title: "Drill 5: Four-Three Winning Fork",
+            prompt: "Create a 4-in-a-row AND an open three in a single move\u2014forcing an unavoidable win!",
+            stones: [
+                  [
+                        9,
+                        7,
+                        1
+                  ],
+                  [
+                        9,
+                        8,
+                        1
+                  ],
+                  [
+                        9,
+                        9,
+                        1
+                  ],
+                  [
+                        7,
+                        10,
+                        1
+                  ],
+                  [
+                        8,
+                        10,
+                        1
+                  ],
+                  [
+                        10,
+                        8,
+                        2
+                  ],
+                  [
+                        10,
+                        9,
+                        2
+                  ],
+                  [
+                        11,
+                        11,
+                        2
+                  ]
+            ],
+            humanCaps: 0,
+            aiCaps: 0,
+            turn: 1,
+            goalCoord: [
+                  9,
+                  10
+            ],
+            successMsg: "4-3 fork! Even if Red blocks your 4, your open three wins next."
+      },
+      {
+            title: "Drill 6: Stop the 4-3 Fork",
+            prompt: "Red is about to play [9,10] for a winning 4-3 fork. Occupy that key intersection first!",
+            stones: [
+                  [
+                        9,
+                        7,
+                        2
+                  ],
+                  [
+                        9,
+                        8,
+                        2
+                  ],
+                  [
+                        9,
+                        9,
+                        2
+                  ],
+                  [
+                        7,
+                        10,
+                        2
+                  ],
+                  [
+                        8,
+                        10,
+                        2
+                  ],
+                  [
+                        10,
+                        8,
+                        1
+                  ],
+                  [
+                        10,
+                        9,
+                        1
+                  ],
+                  [
+                        11,
+                        11,
+                        1
+                  ]
+            ],
+            humanCaps: 0,
+            aiCaps: 0,
+            turn: 1,
+            goalCoord: [
+                  9,
+                  10
+            ],
+            successMsg: "Clutch defense! You denied Red's 4-3 fork at the exact pivot."
+      },
+      {
+            title: "Drill 7: Hidden Tessera Setup",
+            prompt: "Bridge your stones on the anti-diagonal to create an open four.",
+            stones: [
+                  [
+                        11,
+                        7,
+                        1
+                  ],
+                  [
+                        10,
+                        8,
+                        1
+                  ],
+                  [
+                        8,
+                        10,
+                        1
+                  ],
+                  [
+                        9,
+                        8,
+                        2
+                  ],
+                  [
+                        10,
+                        10,
+                        2
+                  ],
+                  [
+                        7,
+                        9,
+                        2
+                  ]
+            ],
+            humanCaps: 0,
+            aiCaps: 0,
+            turn: 1,
+            goalCoord: [
+                  9,
+                  9
+            ],
+            successMsg: "Open four on the anti-diagonal! Victory is guaranteed."
+      },
+      {
+            title: "Drill 8: Double Capture to 5",
+            prompt: "You have 3 pairs captured. Find the double capture that takes 2 pairs at once to win 5/5!",
+            stones: [
+                  [
+                        9,
+                        9,
+                        1
+                  ],
+                  [
+                        9,
+                        10,
+                        2
+                  ],
+                  [
+                        9,
+                        11,
+                        2
+                  ],
+                  [
+                        6,
+                        12,
+                        1
+                  ],
+                  [
+                        7,
+                        12,
+                        2
+                  ],
+                  [
+                        8,
+                        12,
+                        2
+                  ],
+                  [
+                        11,
+                        8,
+                        1
+                  ],
+                  [
+                        10,
+                        10,
+                        2
+                  ]
+            ],
+            humanCaps: 3,
+            aiCaps: 2,
+            turn: 1,
+            goalCoord: [
+                  9,
+                  12
+            ],
+            successMsg: "3 + 2 = 5 captures! Instant win from 3 pairs."
+      },
+      {
+            title: "Drill 9: Break Two Threats by Capture",
+            prompt: "Red threatens a line on row 10 AND column 11. One capture removes a stone from Red's key pair!",
+            stones: [
+                  [
+                        10,
+                        8,
+                        1
+                  ],
+                  [
+                        10,
+                        9,
+                        2
+                  ],
+                  [
+                        10,
+                        10,
+                        2
+                  ],
+                  [
+                        9,
+                        11,
+                        2
+                  ],
+                  [
+                        8,
+                        11,
+                        2
+                  ],
+                  [
+                        11,
+                        11,
+                        2
+                  ],
+                  [
+                        8,
+                        9,
+                        1
+                  ]
+            ],
+            humanCaps: 0,
+            aiCaps: 0,
+            turn: 1,
+            goalCoord: [
+                  10,
+                  11
+            ],
+            successMsg: "You captured [10,9] & [10,10] AND blocked Red's column 11 line!"
+      },
+      {
+            title: "Drill 10: Avoid the Trap, Win with 5",
+            prompt: "A side capture looks tempting, but your diagonal has 4 stones ready to win!",
+            stones: [
+                  [
+                        6,
+                        6,
+                        1
+                  ],
+                  [
+                        7,
+                        7,
+                        1
+                  ],
+                  [
+                        9,
+                        9,
+                        1
+                  ],
+                  [
+                        10,
+                        10,
+                        1
+                  ],
+                  [
+                        8,
+                        10,
+                        1
+                  ],
+                  [
+                        8,
+                        11,
+                        2
+                  ],
+                  [
+                        8,
+                        12,
+                        2
+                  ],
+                  [
+                        11,
+                        8,
+                        2
+                  ]
+            ],
+            humanCaps: 0,
+            aiCaps: 0,
+            turn: 1,
+            goalCoord: [
+                  8,
+                  8
+            ],
+            successMsg: "Five in a row! Never get baited by a side capture when a win is on the board."
+      },
+      {
+            title: "Drill 11: Counter-Tessera Over Defense",
+            prompt: "Red has an open three on row 5, but you can form an unstoppable open four on row 9!",
+            stones: [
+                  [
+                        9,
+                        8,
+                        1
+                  ],
+                  [
+                        9,
+                        9,
+                        1
+                  ],
+                  [
+                        9,
+                        11,
+                        1
+                  ],
+                  [
+                        5,
+                        8,
+                        2
+                  ],
+                  [
+                        5,
+                        9,
+                        2
+                  ],
+                  [
+                        5,
+                        10,
+                        2
+                  ],
+                  [
+                        7,
+                        7,
+                        1
+                  ]
+            ],
+            humanCaps: 0,
+            aiCaps: 0,
+            turn: 1,
+            goalCoord: [
+                  9,
+                  10
+            ],
+            successMsg: "An open four forces Red to defend, but both ends are open\u2014you win next!"
+      },
+      {
+            title: "Drill 12: Rescue Your Pair by Capturing",
+            prompt: "Red threatens to capture your pair on row 9, but capturing Red's vertical pair breaks the threat!",
+            stones: [
+                  [
+                        9,
+                        8,
+                        2
+                  ],
+                  [
+                        9,
+                        9,
+                        1
+                  ],
+                  [
+                        9,
+                        10,
+                        1
+                  ],
+                  [
+                        6,
+                        11,
+                        1
+                  ],
+                  [
+                        7,
+                        11,
+                        2
+                  ],
+                  [
+                        8,
+                        11,
+                        2
+                  ],
+                  [
+                        11,
+                        9,
+                        2
+                  ]
+            ],
+            humanCaps: 0,
+            aiCaps: 0,
+            turn: 1,
+            goalCoord: [
+                  9,
+                  11
+            ],
+            successMsg: "Offense is the best defense! You saved your pair and took Red's."
+      },
+      {
+            title: "Drill 13: Long-Gap 5-in-a-Row",
+            prompt: "Spot the 5-in-a-row hiding in the crowded center\u2014fill the gap between 2 and 2!",
+            stones: [
+                  [
+                        10,
+                        6,
+                        1
+                  ],
+                  [
+                        10,
+                        7,
+                        1
+                  ],
+                  [
+                        10,
+                        9,
+                        1
+                  ],
+                  [
+                        10,
+                        10,
+                        1
+                  ],
+                  [
+                        9,
+                        8,
+                        2
+                  ],
+                  [
+                        11,
+                        8,
+                        2
+                  ],
+                  [
+                        8,
+                        9,
+                        2
+                  ],
+                  [
+                        9,
+                        9,
+                        1
+                  ],
+                  [
+                        11,
+                        10,
+                        2
+                  ]
+            ],
+            humanCaps: 0,
+            aiCaps: 0,
+            turn: 1,
+            goalCoord: [
+                  10,
+                  8
+            ],
+            successMsg: "Clean 2+2 connection for 5!"
+      },
+      {
+            title: "Drill 14: Block & Threaten Capture",
+            prompt: "Seal Red's open three on column 8 while simultaneously threatening a capture on row 11!",
+            stones: [
+                  [
+                        8,
+                        8,
+                        2
+                  ],
+                  [
+                        9,
+                        8,
+                        2
+                  ],
+                  [
+                        10,
+                        8,
+                        2
+                  ],
+                  [
+                        11,
+                        10,
+                        1
+                  ],
+                  [
+                        11,
+                        9,
+                        2
+                  ],
+                  [
+                        7,
+                        9,
+                        1
+                  ]
+            ],
+            humanCaps: 0,
+            aiCaps: 0,
+            turn: 1,
+            goalCoord: [
+                  11,
+                  8
+            ],
+            successMsg: "Dual purpose move: you blocked the open three AND set up a pair capture!"
+      },
+      {
+            title: "Drill 15: Diagonal 4-3 Fork",
+            prompt: "Connect a 4-in-a-row on the diagonal and an open three vertically in one move.",
+            stones: [
+                  [
+                        7,
+                        7,
+                        1
+                  ],
+                  [
+                        8,
+                        8,
+                        1
+                  ],
+                  [
+                        10,
+                        10,
+                        1
+                  ],
+                  [
+                        7,
+                        9,
+                        1
+                  ],
+                  [
+                        8,
+                        9,
+                        1
+                  ],
+                  [
+                        10,
+                        8,
+                        2
+                  ],
+                  [
+                        11,
+                        7,
+                        2
+                  ],
+                  [
+                        6,
+                        8,
+                        2
+                  ]
+            ],
+            humanCaps: 0,
+            aiCaps: 0,
+            turn: 1,
+            goalCoord: [
+                  9,
+                  9
+            ],
+            successMsg: "Textbook 4-3 fork through the center!"
+      },
+      {
+            title: "Drill 16: Capture Out of a Threat",
+            prompt: "Red has a gapped three on column 10. Capture two Red stones horizontally to erase the threat!",
+            stones: [
+                  [
+                        8,
+                        10,
+                        2
+                  ],
+                  [
+                        10,
+                        10,
+                        2
+                  ],
+                  [
+                        11,
+                        10,
+                        2
+                  ],
+                  [
+                        11,
+                        8,
+                        1
+                  ],
+                  [
+                        11,
+                        9,
+                        2
+                  ],
+                  [
+                        9,
+                        9,
+                        1
+                  ],
+                  [
+                        7,
+                        7,
+                        2
+                  ]
+            ],
+            humanCaps: 0,
+            aiCaps: 0,
+            turn: 1,
+            goalCoord: [
+                  11,
+                  11
+            ],
+            successMsg: "Captured [11,9] and [11,10] right out of Red's gapped three!"
       }
-    ]
+]
   },
   grandmaster: {
     packName: 'Grandmaster Puzzle Pack', packCost: 260, puzzleReward: 60,
     badge: 'Level 4 • Grandmaster',
-    title: 'Dual-Win Tension & Captures',
-    intro: 'Balance 5-in-a-row threats against the 5-capture clock. Watch for captures that break enemy lines or win at 5 pairs.',
+    title: 'Tempo, Traps & Endgame Calculation',
+    intro: 'Combine defensive captures with hidden counter-attacks and multi-pair winning strikes.',
     drills: [
       {
-        title: 'Drill 1: Win by 5th Capture',
-        prompt: 'You already have 4 captured pairs! Instead of defending slowly, spot the 5th capture to win immediately.',
-        stones: [
-          [9, 9, BLACK], [10, 9, WHITE], [8, 8, BLACK], [10, 10, WHITE], [7, 7, BLACK], [10, 11, WHITE], [11, 11, BLACK], [10, 12, WHITE], [11, 8, BLACK], [11, 9, WHITE], [12, 10, BLACK]
-        ],
-        humanCaps: 4, aiCaps: 2, turn: BLACK,
-        goalCoord: [11, 10],
-        successMsg: '5th capture! You win immediately by reaching 5 captured pairs.'
+            title: "Drill 1: Triple Capture Win",
+            prompt: "You have 2 pairs captured. Find the single intersection that captures THREE pairs at once to win 5/5!",
+            stones: [
+                  [
+                        9,
+                        9,
+                        1
+                  ],
+                  [
+                        9,
+                        10,
+                        2
+                  ],
+                  [
+                        9,
+                        11,
+                        2
+                  ],
+                  [
+                        6,
+                        12,
+                        1
+                  ],
+                  [
+                        7,
+                        12,
+                        2
+                  ],
+                  [
+                        8,
+                        12,
+                        2
+                  ],
+                  [
+                        12,
+                        9,
+                        1
+                  ],
+                  [
+                        11,
+                        10,
+                        2
+                  ],
+                  [
+                        10,
+                        11,
+                        2
+                  ]
+            ],
+            humanCaps: 2,
+            aiCaps: 2,
+            turn: 1,
+            goalCoord: [
+                  9,
+                  12
+            ],
+            successMsg: "TRIPLE CAPTURE! 6 enemy beads swept off the board to win 5/5!"
       },
       {
-        title: 'Drill 2: Capture to Break a Threat',
-        prompt: 'Red has an open three on row 10, but two of those stones are a vulnerable pair! Capture them to neutralize the threat.',
-        stones: [
-          [9, 9, BLACK], [10, 9, WHITE], [8, 8, BLACK], [10, 10, WHITE], [10, 8, BLACK], [10, 11, WHITE]
-        ],
-        humanCaps: 2, aiCaps: 1, turn: BLACK,
-        goalCoords: [[10, 7], [10, 12]],
-        successMsg: 'Precision defense! Capturing stones out of an enemy line destroys their 5-in-a-row plan.'
+            title: "Drill 2: Double Capture From 3 Pairs",
+            prompt: "Red threatens 5-in-a-row next turn! Ignore it and win immediately with a 2-pair capture.",
+            stones: [
+                  [
+                        6,
+                        6,
+                        2
+                  ],
+                  [
+                        6,
+                        7,
+                        2
+                  ],
+                  [
+                        6,
+                        8,
+                        2
+                  ],
+                  [
+                        6,
+                        9,
+                        2
+                  ],
+                  [
+                        9,
+                        9,
+                        1
+                  ],
+                  [
+                        9,
+                        10,
+                        2
+                  ],
+                  [
+                        9,
+                        11,
+                        2
+                  ],
+                  [
+                        12,
+                        12,
+                        1
+                  ],
+                  [
+                        11,
+                        12,
+                        2
+                  ],
+                  [
+                        10,
+                        12,
+                        2
+                  ]
+            ],
+            humanCaps: 3,
+            aiCaps: 3,
+            turn: 1,
+            goalCoord: [
+                  9,
+                  12
+            ],
+            successMsg: "Ice-cold! 3 + 2 = 5 pairs beats Red's 4-in-a-row."
       },
       {
-        title: 'Drill 3: 6-in-a-Row Bridge',
-        prompt: 'Connect two separate Blue segments with a single bridging bead to win immediately with 6 in a row!',
-        stones: [
-          [9, 6, BLACK], [9, 7, BLACK], [9, 8, BLACK], [9, 10, BLACK], [9, 11, BLACK], [8, 8, WHITE], [8, 9, WHITE], [8, 10, WHITE], [10, 10, WHITE]
-        ],
-        humanCaps: 0, aiCaps: 0, turn: BLACK,
-        goalCoord: [9, 9],
-        successMsg: 'Six in a row wins immediately in Pente—even if the opponent had a capture threat!'
+            title: "Drill 3: Block Four + Create Four",
+            prompt: "Red threatens 5 on row 7. Find the ONE move that blocks Red AND completes your own 4-in-a-row!",
+            stones: [
+                  [
+                        7,
+                        7,
+                        2
+                  ],
+                  [
+                        7,
+                        8,
+                        2
+                  ],
+                  [
+                        7,
+                        9,
+                        2
+                  ],
+                  [
+                        7,
+                        10,
+                        2
+                  ],
+                  [
+                        8,
+                        11,
+                        1
+                  ],
+                  [
+                        9,
+                        11,
+                        1
+                  ],
+                  [
+                        10,
+                        11,
+                        1
+                  ],
+                  [
+                        6,
+                        6,
+                        1
+                  ],
+                  [
+                        11,
+                        12,
+                        2
+                  ]
+            ],
+            humanCaps: 0,
+            aiCaps: 0,
+            turn: 1,
+            goalCoord: [
+                  7,
+                  11
+            ],
+            successMsg: "Counter-attack! You stopped Red's 5 and seized the initiative with a 4."
+      },
+      {
+            title: "Drill 4: Capture Out of a Four",
+            prompt: "Red has 4 in a row on row 8! Capture two stones right out of Red's line to survive.",
+            stones: [
+                  [
+                        8,
+                        8,
+                        2
+                  ],
+                  [
+                        8,
+                        9,
+                        2
+                  ],
+                  [
+                        8,
+                        10,
+                        2
+                  ],
+                  [
+                        8,
+                        11,
+                        2
+                  ],
+                  [
+                        5,
+                        9,
+                        1
+                  ],
+                  [
+                        6,
+                        9,
+                        2
+                  ],
+                  [
+                        7,
+                        9,
+                        2
+                  ],
+                  [
+                        10,
+                        10,
+                        1
+                  ],
+                  [
+                        11,
+                        11,
+                        1
+                  ]
+            ],
+            humanCaps: 2,
+            aiCaps: 1,
+            turn: 1,
+            goalCoords: [
+                  [
+                        8,
+                        7
+                  ],
+                  [
+                        8,
+                        12
+                  ]
+            ],
+            successMsg: "Blocked [8,7]/[8,12]! (Note: [8,9] is part of Red's 4, so sealing the open end saves the game.)"
+      },
+      {
+            title: "Drill 5: Crowded Center 5-in-a-Row",
+            prompt: "In a dense midgame skirmish, spot the hidden anti-diagonal 5-in-a-row!",
+            stones: [
+                  [
+                        6,
+                        12,
+                        1
+                  ],
+                  [
+                        7,
+                        11,
+                        1
+                  ],
+                  [
+                        9,
+                        9,
+                        1
+                  ],
+                  [
+                        10,
+                        8,
+                        1
+                  ],
+                  [
+                        8,
+                        8,
+                        2
+                  ],
+                  [
+                        8,
+                        9,
+                        2
+                  ],
+                  [
+                        7,
+                        9,
+                        2
+                  ],
+                  [
+                        10,
+                        9,
+                        2
+                  ],
+                  [
+                        9,
+                        7,
+                        1
+                  ],
+                  [
+                        6,
+                        9,
+                        2
+                  ],
+                  [
+                        11,
+                        10,
+                        1
+                  ],
+                  [
+                        11,
+                        8,
+                        2
+                  ]
+            ],
+            humanCaps: 1,
+            aiCaps: 2,
+            turn: 1,
+            goalCoord: [
+                  8,
+                  10
+            ],
+            successMsg: "Laser focus! Amidst the clutter, [8,10] completed 5 in a row."
+      },
+      {
+            title: "Drill 6: 5th Capture Through Traffic",
+            prompt: "Find the diagonal capture at [11,11] to reach 5/5 pairs and win!",
+            stones: [
+                  [
+                        8,
+                        8,
+                        1
+                  ],
+                  [
+                        9,
+                        9,
+                        2
+                  ],
+                  [
+                        10,
+                        10,
+                        2
+                  ],
+                  [
+                        7,
+                        9,
+                        2
+                  ],
+                  [
+                        8,
+                        10,
+                        1
+                  ],
+                  [
+                        10,
+                        8,
+                        1
+                  ],
+                  [
+                        11,
+                        9,
+                        2
+                  ],
+                  [
+                        12,
+                        10,
+                        1
+                  ]
+            ],
+            humanCaps: 4,
+            aiCaps: 3,
+            turn: 1,
+            goalCoord: [
+                  11,
+                  11
+            ],
+            successMsg: "5/5 captures! Precision calculation under pressure."
+      },
+      {
+            title: "Drill 7: Simultaneous Capture & Tessera",
+            prompt: "Capture Red's pair on column 7 while extending your row 9 line into an open four!",
+            stones: [
+                  [
+                        9,
+                        8,
+                        1
+                  ],
+                  [
+                        9,
+                        9,
+                        1
+                  ],
+                  [
+                        9,
+                        10,
+                        1
+                  ],
+                  [
+                        12,
+                        7,
+                        1
+                  ],
+                  [
+                        11,
+                        7,
+                        2
+                  ],
+                  [
+                        10,
+                        7,
+                        2
+                  ],
+                  [
+                        7,
+                        8,
+                        2
+                  ],
+                  [
+                        8,
+                        11,
+                        2
+                  ]
+            ],
+            humanCaps: 1,
+            aiCaps: 1,
+            turn: 1,
+            goalCoord: [
+                  9,
+                  7
+            ],
+            successMsg: "Capture + open four! Both ends of row 9 are now open."
+      },
+      {
+            title: "Drill 8: Double-Three on Diagonals",
+            prompt: "Create two simultaneous diagonal open threes at the exact crossing point!",
+            stones: [
+                  [
+                        8,
+                        8,
+                        1
+                  ],
+                  [
+                        7,
+                        7,
+                        1
+                  ],
+                  [
+                        10,
+                        8,
+                        1
+                  ],
+                  [
+                        11,
+                        7,
+                        1
+                  ],
+                  [
+                        9,
+                        7,
+                        2
+                  ],
+                  [
+                        10,
+                        10,
+                        2
+                  ],
+                  [
+                        8,
+                        11,
+                        2
+                  ],
+                  [
+                        6,
+                        9,
+                        2
+                  ]
+            ],
+            humanCaps: 0,
+            aiCaps: 1,
+            turn: 1,
+            goalCoord: [
+                  9,
+                  9
+            ],
+            successMsg: "Twin diagonal open threes! Red cannot defend both."
+      },
+      {
+            title: "Drill 9: Stop the Triple Threat",
+            prompt: "Red has a 4-3 setup converging on [9,10]. Steal [9,10] before Red closes it!",
+            stones: [
+                  [
+                        9,
+                        7,
+                        2
+                  ],
+                  [
+                        9,
+                        8,
+                        2
+                  ],
+                  [
+                        9,
+                        9,
+                        2
+                  ],
+                  [
+                        7,
+                        10,
+                        2
+                  ],
+                  [
+                        8,
+                        10,
+                        2
+                  ],
+                  [
+                        11,
+                        8,
+                        2
+                  ],
+                  [
+                        10,
+                        9,
+                        2
+                  ],
+                  [
+                        10,
+                        11,
+                        1
+                  ],
+                  [
+                        8,
+                        8,
+                        1
+                  ],
+                  [
+                        6,
+                        9,
+                        1
+                  ]
+            ],
+            humanCaps: 1,
+            aiCaps: 1,
+            turn: 1,
+            goalCoord: [
+                  9,
+                  10
+            ],
+            successMsg: "Surgical block! You neutralized three lines at once."
+      },
+      {
+            title: "Drill 10: Edge-to-Center 5-in-a-Row",
+            prompt: "Spot the 5-in-a-row connecting along row 4!",
+            stones: [
+                  [
+                        4,
+                        3,
+                        1
+                  ],
+                  [
+                        4,
+                        4,
+                        1
+                  ],
+                  [
+                        4,
+                        6,
+                        1
+                  ],
+                  [
+                        4,
+                        7,
+                        1
+                  ],
+                  [
+                        5,
+                        5,
+                        2
+                  ],
+                  [
+                        6,
+                        5,
+                        2
+                  ],
+                  [
+                        3,
+                        5,
+                        2
+                  ],
+                  [
+                        7,
+                        7,
+                        1
+                  ],
+                  [
+                        8,
+                        8,
+                        2
+                  ]
+            ],
+            humanCaps: 2,
+            aiCaps: 2,
+            turn: 1,
+            goalCoord: [
+                  4,
+                  5
+            ],
+            successMsg: "Clean finish on row 4!"
+      },
+      {
+            title: "Drill 11: Counter-Capture Saves the Game",
+            prompt: "Red has 4-in-a-row on row 10, AND you have 4 captures! Win with your 5th capture on column 12.",
+            stones: [
+                  [
+                        10,
+                        7,
+                        2
+                  ],
+                  [
+                        10,
+                        8,
+                        2
+                  ],
+                  [
+                        10,
+                        9,
+                        2
+                  ],
+                  [
+                        10,
+                        10,
+                        2
+                  ],
+                  [
+                        6,
+                        12,
+                        1
+                  ],
+                  [
+                        7,
+                        12,
+                        2
+                  ],
+                  [
+                        8,
+                        12,
+                        2
+                  ],
+                  [
+                        11,
+                        11,
+                        1
+                  ]
+            ],
+            humanCaps: 4,
+            aiCaps: 2,
+            turn: 1,
+            goalCoord: [
+                  9,
+                  12
+            ],
+            successMsg: "5th capture wins before Red can play row 10!"
+      },
+      {
+            title: "Drill 12: Cross-Board 4-3 Fork",
+            prompt: "Play [8,8] to create a 4-in-a-row on column 8 and an open three on row 8!",
+            stones: [
+                  [
+                        5,
+                        8,
+                        1
+                  ],
+                  [
+                        6,
+                        8,
+                        1
+                  ],
+                  [
+                        7,
+                        8,
+                        1
+                  ],
+                  [
+                        8,
+                        9,
+                        1
+                  ],
+                  [
+                        8,
+                        10,
+                        1
+                  ],
+                  [
+                        9,
+                        9,
+                        2
+                  ],
+                  [
+                        10,
+                        10,
+                        2
+                  ],
+                  [
+                        7,
+                        7,
+                        2
+                  ],
+                  [
+                        6,
+                        10,
+                        2
+                  ]
+            ],
+            humanCaps: 1,
+            aiCaps: 0,
+            turn: 1,
+            goalCoord: [
+                  8,
+                  8
+            ],
+            successMsg: "Unstoppable 4-3 fork!"
+      },
+      {
+            title: "Drill 13: Anti-Diagonal Double Capture",
+            prompt: "From 3/5 captures, take two pairs at once along row 6 and the anti-diagonal to win!",
+            stones: [
+                  [
+                        6,
+                        6,
+                        1
+                  ],
+                  [
+                        6,
+                        7,
+                        2
+                  ],
+                  [
+                        6,
+                        8,
+                        2
+                  ],
+                  [
+                        9,
+                        6,
+                        1
+                  ],
+                  [
+                        8,
+                        7,
+                        2
+                  ],
+                  [
+                        7,
+                        8,
+                        2
+                  ],
+                  [
+                        10,
+                        10,
+                        2
+                  ],
+                  [
+                        11,
+                        11,
+                        1
+                  ]
+            ],
+            humanCaps: 3,
+            aiCaps: 2,
+            turn: 1,
+            goalCoord: [
+                  6,
+                  9
+            ],
+            successMsg: "Double capture to 5/5! Game over."
+      },
+      {
+            title: "Drill 14: Block Open Three + Threaten 4",
+            prompt: "Red has an open three on row 11. Block at [11,11] to also build your own 4-in-a-row on column 11!",
+            stones: [
+                  [
+                        11,
+                        8,
+                        2
+                  ],
+                  [
+                        11,
+                        9,
+                        2
+                  ],
+                  [
+                        11,
+                        10,
+                        2
+                  ],
+                  [
+                        8,
+                        11,
+                        1
+                  ],
+                  [
+                        9,
+                        11,
+                        1
+                  ],
+                  [
+                        10,
+                        11,
+                        1
+                  ],
+                  [
+                        7,
+                        10,
+                        2
+                  ],
+                  [
+                        12,
+                        9,
+                        1
+                  ]
+            ],
+            humanCaps: 0,
+            aiCaps: 1,
+            turn: 1,
+            goalCoord: [
+                  11,
+                  11
+            ],
+            successMsg: "Total tempo reversal\u2014blocked Red and threatened 5!"
+      },
+      {
+            title: "Drill 15: Hidden Vertical Five",
+            prompt: "In a tense endgame, find the vertical 5-in-a-row on column 13!",
+            stones: [
+                  [
+                        6,
+                        13,
+                        1
+                  ],
+                  [
+                        7,
+                        13,
+                        1
+                  ],
+                  [
+                        8,
+                        13,
+                        1
+                  ],
+                  [
+                        10,
+                        13,
+                        1
+                  ],
+                  [
+                        8,
+                        11,
+                        2
+                  ],
+                  [
+                        8,
+                        12,
+                        2
+                  ],
+                  [
+                        9,
+                        12,
+                        2
+                  ],
+                  [
+                        10,
+                        12,
+                        2
+                  ],
+                  [
+                        11,
+                        11,
+                        1
+                  ]
+            ],
+            humanCaps: 2,
+            aiCaps: 3,
+            turn: 1,
+            goalCoord: [
+                  9,
+                  13
+            ],
+            successMsg: "Clinical endgame finish!"
+      },
+      {
+            title: "Drill 16: Grandmaster Finale (Double Capture + 4)",
+            prompt: "From 3/5 captures, find the single move that captures 2 pairs to win 5/5 while completing a 4!",
+            stones: [
+                  [
+                        9,
+                        6,
+                        1
+                  ],
+                  [
+                        9,
+                        7,
+                        2
+                  ],
+                  [
+                        9,
+                        8,
+                        2
+                  ],
+                  [
+                        6,
+                        9,
+                        1
+                  ],
+                  [
+                        7,
+                        9,
+                        2
+                  ],
+                  [
+                        8,
+                        9,
+                        2
+                  ],
+                  [
+                        10,
+                        9,
+                        1
+                  ],
+                  [
+                        11,
+                        9,
+                        1
+                  ],
+                  [
+                        12,
+                        9,
+                        1
+                  ],
+                  [
+                        8,
+                        8,
+                        2
+                  ]
+            ],
+            humanCaps: 3,
+            aiCaps: 3,
+            turn: 1,
+            goalCoord: [
+                  9,
+                  9
+            ],
+            successMsg: "Grandmaster mastery! 5/5 captures AND 5-in-a-row style."
       }
-    ]
+]
   }
 };
-
 
 export function coordLabel(r, c) {
   const col = String.fromCharCode(65 + (c >= 8 ? c + 1 : c));
