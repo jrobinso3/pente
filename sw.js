@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pente-pwa-v5';
+const CACHE_NAME = 'pente-pwa-v6';
 const APP_SHELL = [
   './',
   './index.html',
@@ -64,6 +64,23 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // Same-origin app files: network-first so updates apply immediately, cache fallback for offline
+  if (url.origin === self.location.origin) {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          if (response && response.status === 200) {
+            const copy = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+          }
+          return response;
+        })
+        .catch(() => caches.match(request))
+    );
+    return;
+  }
+
+  // External CDN assets: stale-while-revalidate
   event.respondWith(
     caches.match(request).then((cached) => {
       const networkFetch = fetch(request)
