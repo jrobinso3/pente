@@ -47,7 +47,7 @@ export class ModalManager {
       closed: 'Disconnected'
     };
     if (this.els.p2pStatusText) {
-      this.els.p2pStatusText.textContent = labels[status] || 'Direct peer-to-peer via WebRTC';
+      this.els.p2pStatusText.textContent = labels[status] || 'Share a code to play with a friend.';
     }
   }
 
