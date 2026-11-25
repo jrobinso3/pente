@@ -11,6 +11,11 @@ window.addEventListener('load', () => {
       location.hostname === 'localhost' ||
       location.hostname === '127.0.0.1')
   ) {
-    navigator.serviceWorker.register('./sw.js', { scope: './' }).catch(() => {});
+    navigator.serviceWorker
+      .register('./sw.js', { scope: './' })
+      .then((reg) => {
+        reg.update().catch(() => {});
+      })
+      .catch(() => {});
   }
 });

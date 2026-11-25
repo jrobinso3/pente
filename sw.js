@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pente-pwa-v7';
+const CACHE_NAME = 'pente-pwa-v8';
 const APP_SHELL = [
   './',
   './index.html',
