@@ -183,7 +183,7 @@ export class ModalManager {
               </div>
             </div>
             <button type="button" data-unlockstoryrival="${idx}" ${canAfford ? '' : 'disabled'}
-              class="px-3 py-1.5 rounded-lg text-[13px] font-bold shrink-0 transition ${
+              class="px-3 py-1.5 rounded-[2px] text-[13px] font-bold shrink-0 transition ${
                 canAfford ? 'bg-[#161616] hover:bg-[#2C2C2C] text-white shadow' : 'bg-stone-800 text-[#8A8279] cursor-not-allowed'
               }">Unlock $${prof.unlockCost}</button>
           </div>
@@ -199,7 +199,7 @@ export class ModalManager {
               </div>
             </div>
             <button type="button" data-playchapter="${idx}"
-              class="px-3.5 py-1.5 rounded-lg text-[13px] font-bold bg-[#161616] hover:bg-[#2C2C2C] text-white shadow shrink-0 transition">
+              class="px-3.5 py-1.5 rounded-[2px] text-[13px] font-bold bg-[#161616] hover:bg-[#2C2C2C] text-white shadow shrink-0 transition">
               ${cleared ? 'Play' : 'Start'}
             </button>
           </div>
@@ -329,7 +329,7 @@ export class ModalManager {
               <div class="text-[13px] text-[#6E675F] leading-snug">${prof.title} • Win +$${prof.winPrize} / Lose -$${prof.losePenalty}</div>
             </div>
           </div>
-          <button type="button" data-buyrival="${key}" class="px-2.5 py-1.5 rounded-lg text-[13px] font-bold shrink-0 transition ${
+          <button type="button" data-buyrival="${key}" class="px-2.5 py-1.5 rounded-[2px] text-[13px] font-bold shrink-0 transition ${
             owned ? 'bg-emerald-700/15 text-emerald-900 border border-emerald-700/30' :
             canAfford ? 'bg-[#161616] hover:bg-[#2C2C2C] text-white' : 'bg-stone-800 text-[#8A8279] cursor-not-allowed'
           }">${owned ? 'Play' : `$${prof.unlockCost}`}</button>
@@ -350,7 +350,7 @@ export class ModalManager {
               <div class="text-[13px] text-[#6E675F] leading-snug">${pack.drills.length} puzzles • Pays $${pack.puzzleReward} each</div>
             </div>
           </div>
-          <button type="button" data-buypack="${key}" class="px-2.5 py-1.5 rounded-lg text-[13px] font-bold shrink-0 transition ${
+          <button type="button" data-buypack="${key}" class="px-2.5 py-1.5 rounded-[2px] text-[13px] font-bold shrink-0 transition ${
             owned ? 'bg-emerald-700/15 text-emerald-900 border border-emerald-700/30' :
             canAfford ? 'bg-[#161616] hover:bg-[#2C2C2C] text-white' : 'bg-stone-800 text-[#8A8279] cursor-not-allowed'
           }">${owned ? 'Open' : `$${pack.packCost}`}</button>
@@ -392,7 +392,7 @@ export class ModalManager {
               <div class="text-[13px] text-[#6E675F] leading-snug">${item.desc}</div>
             </div>
           </div>
-          <button type="button" data-buybead="${key}" class="px-2.5 py-1.5 rounded-lg text-[13px] font-bold shrink-0 transition ${
+          <button type="button" data-buybead="${key}" class="px-2.5 py-1.5 rounded-[2px] text-[13px] font-bold shrink-0 transition ${
             equipped ? 'bg-emerald-500/25 text-emerald-900 border border-emerald-700/30' :
             owned ? 'bg-stone-700 hover:bg-stone-600 text-[#161616]' :
             canAfford ? 'bg-[#161616] hover:bg-[#2C2C2C] text-white' : 'bg-stone-800 text-[#8A8279] cursor-not-allowed'
@@ -415,7 +415,7 @@ export class ModalManager {
               <div class="text-[13px] text-[#6E675F] leading-snug">${item.desc}</div>
             </div>
           </div>
-          <button type="button" data-buyboard="${key}" class="px-2.5 py-1.5 rounded-lg text-[13px] font-bold shrink-0 transition ${
+          <button type="button" data-buyboard="${key}" class="px-2.5 py-1.5 rounded-[2px] text-[13px] font-bold shrink-0 transition ${
             equipped ? 'bg-emerald-500/25 text-emerald-900 border border-emerald-700/30' :
             owned ? 'bg-stone-700 hover:bg-stone-600 text-[#161616]' :
             canAfford ? 'bg-[#161616] hover:bg-[#2C2C2C] text-white' : 'bg-stone-800 text-[#8A8279] cursor-not-allowed'
@@ -458,7 +458,7 @@ export class ModalManager {
             <div class="text-[12px] text-[#6E675F]">Reward: $${pack.puzzleReward} per puzzle</div>
           </div>`;
       if (!owned) {
-        headerHtml += `<button type="button" data-unlockpack="${tierKey}" class="px-2.5 py-1 rounded-lg text-[13px] font-bold ${canAfford ? 'bg-[#161616] hover:bg-[#2C2C2C] text-white' : 'bg-stone-800 text-[#8A8279] cursor-not-allowed'}">Unlock $${pack.packCost}</button>`;
+        headerHtml += `<button type="button" data-unlockpack="${tierKey}" class="px-2.5 py-1 rounded-[2px] text-[13px] font-bold ${canAfford ? 'bg-[#161616] hover:bg-[#2C2C2C] text-white' : 'bg-stone-800 text-[#8A8279] cursor-not-allowed'}">Unlock $${pack.packCost}</button>`;
       }
       headerHtml += '</div>';
       sec.innerHTML = headerHtml;
