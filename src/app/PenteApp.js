@@ -122,9 +122,9 @@ export class PenteApp {
     this.startNewGame();
 
     const params = new URLSearchParams(window.location.search);
-    const offer = params.get('offer');
-    if (offer) {
-      this.modals.openP2PModal('join', offer);
+    const room = params.get('room');
+    if (room) {
+      this.modals.openP2PModal('join', room);
       try {
         window.history.replaceState({}, '', window.location.pathname);
       } catch (e) {}
@@ -655,9 +655,8 @@ export class PenteApp {
       'btnHomePuzzles', 'btnHomeShop', 'btnHomeAchievements', 'homeAchCount',
       'humanNameLabel', 'winQuoteBox',
       'p2pModal', 'p2pStatusText', 'btnCloseP2P', 'btnP2PTabHost', 'btnP2PTabJoin',
-      'p2pHostPane', 'p2pJoinPane', 'btnP2PCreateOffer', 'p2pOfferBox', 'p2pOfferOutput',
-      'btnP2PCopyLink', 'btnP2PCopyOffer', 'p2pAnswerInput', 'btnP2PConnect',
-      'p2pOfferInput', 'btnP2PCreateAnswer', 'p2pAnswerBox', 'p2pAnswerOutput', 'btnP2PCopyAnswer',
+      'p2pHostPane', 'p2pJoinPane', 'btnP2PCreateRoom', 'p2pRoomBox', 'p2pRoomCodeText',
+      'btnP2PCopyLink', 'btnP2PCopyCode', 'p2pRoomInput', 'btnP2PJoinRoom',
       'achievementsModal', 'achModalCount', 'achCoinsDisplay',
       'btnCloseAchievements', 'achievementsBody', 'btnHomeRules', 'btnGoHome',
       'puzzlesModal', 'puzzlesCoinsDisplay', 'btnClosePuzzles', 'puzzlesBody',

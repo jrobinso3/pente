@@ -40,9 +40,8 @@ export class ModalManager {
 
   setP2PStatus(status) {
     const labels = {
-      gathering: 'Gathering network routes…',
-      waiting_answer: 'Invite ready — waiting for friend’s answer',
-      waiting_host: 'Answer ready — send it back to host',
+      creating: 'Creating room…',
+      waiting_guest: 'Room open — waiting for friend to join',
       connecting: 'Connecting peer-to-peer…',
       connected: 'Connected peer-to-peer',
       closed: 'Disconnected'
@@ -52,13 +51,16 @@ export class ModalManager {
     }
   }
 
-  openP2PModal(tab = 'host', prefillOffer = '') {
+  openP2PModal(tab = 'host', prefillRoom = '') {
     const { els } = this;
     this._switchP2PTab(tab);
-    if (prefillOffer) {
-      els.p2pOfferInput.value = prefillOffer;
+    if (prefillRoom) {
+      els.p2pRoomInput.value = prefillRoom;
     }
     this._showModal(els.p2pModal);
+    if (prefillRoom && tab === 'join' && this.peer) {
+      els.btnP2PJoinRoom.click();
+    }
   }
 
   closeP2PModal() {
@@ -807,72 +809,51 @@ export class ModalManager {
       }
     };
 
-    els.btnP2PCreateOffer.addEventListener('click', async () => {
+    els.btnP2PCreateRoom.addEventListener('click', async () => {
       if (!this.peer) return;
-      els.btnP2PCreateOffer.disabled = true;
-      els.btnP2PCreateOffer.textContent = 'Creating Invite…';
+      els.btnP2PCreateRoom.disabled = true;
+      els.btnP2PCreateRoom.textContent = 'Creating Room…';
       try {
-        const code = await this.peer.createOffer();
-        els.p2pOfferOutput.value = code;
-        els.p2pOfferBox.classList.remove('hidden');
+        const code = await this.peer.hostRoom();
+        els.p2pRoomCodeText.textContent = code;
+        els.p2pRoomBox.classList.remove('hidden');
       } catch (e) {
-        this.showToast('Failed to create WebRTC invite');
+        this.showToast(e && e.message ? e.message : 'Failed to create room');
       } finally {
-        els.btnP2PCreateOffer.disabled = false;
-        els.btnP2PCreateOffer.textContent = '1. Create Invite Code';
+        els.btnP2PCreateRoom.disabled = false;
+        els.btnP2PCreateRoom.textContent = 'Create 6-Char Room';
       }
     });
 
     els.btnP2PCopyLink.addEventListener('click', () => {
-      const code = els.p2pOfferOutput.value.trim();
-      if (!code) return;
-      const url = `${window.location.origin}${window.location.pathname}?offer=${encodeURIComponent(code)}`;
+      const code = els.p2pRoomCodeText.textContent.trim();
+      if (!code || code === '------') return;
+      const url = `${window.location.origin}${window.location.pathname}?room=${encodeURIComponent(code)}`;
       copyText(url, 'invite link');
     });
 
-    els.btnP2PCopyOffer.addEventListener('click', () => {
-      const code = els.p2pOfferOutput.value.trim();
-      if (code) copyText(code, 'invite code');
+    els.btnP2PCopyCode.addEventListener('click', () => {
+      const code = els.p2pRoomCodeText.textContent.trim();
+      if (code && code !== '------') copyText(code, 'room code');
     });
 
-    els.btnP2PConnect.addEventListener('click', async () => {
+    els.btnP2PJoinRoom.addEventListener('click', async () => {
       if (!this.peer) return;
-      const ans = els.p2pAnswerInput.value.trim();
-      if (!ans) {
-        this.showToast('Paste your friend’s answer code first');
+      const raw = els.p2pRoomInput.value.trim();
+      if (!raw) {
+        this.showToast('Enter a room code or invite link');
         return;
       }
+      els.btnP2PJoinRoom.disabled = true;
+      els.btnP2PJoinRoom.textContent = 'Connecting…';
       try {
-        await this.peer.acceptAnswer(ans);
+        await this.peer.joinRoom(raw);
       } catch (e) {
-        this.showToast('Invalid answer code');
-      }
-    });
-
-    els.btnP2PCreateAnswer.addEventListener('click', async () => {
-      if (!this.peer) return;
-      const offer = els.p2pOfferInput.value.trim();
-      if (!offer) {
-        this.showToast('Paste the host’s invite link or code first');
-        return;
-      }
-      els.btnP2PCreateAnswer.disabled = true;
-      els.btnP2PCreateAnswer.textContent = 'Generating Answer…';
-      try {
-        const ans = await this.peer.acceptOfferAndCreateAnswer(offer);
-        els.p2pAnswerOutput.value = ans;
-        els.p2pAnswerBox.classList.remove('hidden');
-      } catch (e) {
-        this.showToast('Invalid invite link or code');
+        this.showToast(e && e.message ? e.message : 'Could not join room');
       } finally {
-        els.btnP2PCreateAnswer.disabled = false;
-        els.btnP2PCreateAnswer.textContent = 'Generate Answer Code';
+        els.btnP2PJoinRoom.disabled = false;
+        els.btnP2PJoinRoom.textContent = 'Join & Play';
       }
-    });
-
-    els.btnP2PCopyAnswer.addEventListener('click', () => {
-      const ans = els.p2pAnswerOutput.value.trim();
-      if (ans) copyText(ans, 'answer code');
     });
     els.btnHomePuzzles.addEventListener('click', () => this.openPuzzlesModal());
     els.btnHomeShop.addEventListener('click', () => {
