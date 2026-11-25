@@ -1,8 +1,19 @@
-const CACHE_NAME = 'pente-pwa-v1';
+const CACHE_NAME = 'pente-pwa-v2';
 const APP_SHELL = [
   './',
   './index.html',
   './manifest.webmanifest',
+  './styles/app.css',
+  './src/main.js',
+  './src/app/PenteApp.js',
+  './src/config/constants.js',
+  './src/engine/PenteGame.js',
+  './src/engine/PenteAI.js',
+  './src/audio/SoundFX.js',
+  './src/state/ProfileStore.js',
+  './src/ui/BoardRenderer.js',
+  './src/ui/MentorCoach.js',
+  './src/ui/ModalManager.js',
   './icons/icon-192.png',
   './icons/icon-512.png',
   './icons/icon-maskable-512.png',
@@ -36,7 +47,6 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(request.url);
   if (url.protocol !== 'http:' && url.protocol !== 'https:') return;
 
-  // Navigation requests: network-first, fall back to cached index.html
   if (request.mode === 'navigate') {
     event.respondWith(
       fetch(request)
@@ -50,7 +60,6 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Same-origin & CDN assets (Tailwind, Google Fonts): stale-while-revalidate
   event.respondWith(
     caches.match(request).then((cached) => {
       const networkFetch = fetch(request)
