@@ -1,31 +1,29 @@
 # Pente — Mobile Web App (PWA)
 
-A mobile-friendly Progressive Web App version of **Pente — 5-in-a-Row Strategy Game**, configured to run on **GitHub Pages** and install on iOS and Android home screens with offline support.
+A mobile-friendly Progressive Web App version of **Pente — 5-in-a-Row Strategy Game**, built with modular ES6 OOP classes and configured to run on **GitHub Pages** with offline support.
 
-## Project Files
+## Project Structure
 
-- `index.html` — Main game entry point with PWA meta tags, safe-area inset handling, and service worker registration.
-- `manifest.webmanifest` — Web App Manifest (`standalone` display, relative `start_url`/`scope` for GitHub Pages subpaths).
-- `sw.js` — Service worker for offline caching of the app shell and assets.
-- `icons/` — App icons (`icon-192.png`, `icon-512.png`, `icon-maskable-512.png`, `apple-touch-icon.png`).
-- `.nojekyll` — Disables Jekyll processing on GitHub Pages.
+- `index.html` — App shell, PWA meta tags, and `<script type="module" src="./src/main.js">` entry point.
+- `styles/app.css` — Theme variables, safe-area inset layout, and board/pip styling.
+- `src/`
+  - `main.js` — Application bootstrap and service worker registration.
+  - `app/PenteApp.js` — `PenteApp` controller coordinating engine, AI, audio, HUD, and modals.
+  - `engine/PenteGame.js` — `PenteGame` rules engine (19×19 board, captures, 5-in-a-row, undo, Zobrist hashing).
+  - `engine/PenteAI.js` — `PenteAI` iterative deepening alpha-beta search and threat evaluator.
+  - `audio/SoundFX.js` — `SoundFX` Web Audio API sound synthesizer.
+  - `state/ProfileStore.js` — `ProfileStore` `localStorage` persistence and achievement queue.
+  - `config/constants.js` — Game constants, AI profiles, themes, achievements, story chapters, and puzzle curriculum.
+  - `ui/BoardRenderer.js` — `BoardRenderer` canvas renderer and touch/pointer pan & zoom handler.
+  - `ui/MentorCoach.js` — `MentorCoach` move analysis and puzzle drills.
+  - `ui/ModalManager.js` — `ModalManager` for Story Mode, Setup, Shop, Puzzles, Achievements, and Rules.
+- `manifest.webmanifest` — Web App Manifest (`standalone` display, relative `start_url`/`scope`).
+- `sw.js` — Service worker for offline caching.
+- `icons/` — PWA app icons (`192x192`, `512x512`, maskable `512x512`, `180x180` Apple touch icon).
 - `.github/workflows/pages.yml` — GitHub Actions workflow for deploying to GitHub Pages.
 
-## Deploy to GitHub Pages
+## Install on Mobile
 
-1. Push this folder to a GitHub repository (e.g. `main` branch):
-   ```bash
-   git init -b main
-   git add .
-   git commit -m "Configure Pente mobile web app for GitHub Pages"
-   git remote add origin https://github.com/<your-username>/<your-repo>.git
-   git push -u origin main
-   ```
-2. In your GitHub repository, go to **Settings → Pages**:
-   - Under **Build and deployment → Source**, choose **GitHub Actions** (uses `.github/workflows/pages.yml`), **or** choose **Deploy from a branch** (`main`, `/ (root)`).
-3. Open `https://<your-username>.github.io/<your-repo>/` on your phone.
-
-## Install as a Mobile App
-
-- **iPhone / iPad (Safari):** Open the GitHub Pages URL, tap **Share**, then **Add to Home Screen**.
-- **Android (Chrome):** Open the GitHub Pages URL, tap the menu (**⋮**) or install banner, then **Install app** / **Add to Home screen**.
+1. Open `https://jrobinso3.github.io/pente/` on your phone.
+2. **iPhone / iPad (Safari):** Tap **Share** → **Add to Home Screen**.
+3. **Android (Chrome):** Tap **⋮** (or the install prompt) → **Install app** / **Add to Home screen**.
