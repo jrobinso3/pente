@@ -17,6 +17,7 @@ export class ProfileStore {
       solvedPuzzles: [],
       activeBead: 'classic',
       activeBoard: 'walnut_travertine',
+      boardMigratedV2: false,
       drillsSolved: 0,
       storyCleared: [],
       storyPlays: {},
@@ -41,6 +42,13 @@ export class ProfileStore {
         if (!Array.isArray(this.data.ownedRivals)) this.data.ownedRivals = ['novice'];
         if (!Array.isArray(this.data.ownedPuzzlePacks)) this.data.ownedPuzzlePacks = ['novice'];
         if (!Array.isArray(this.data.solvedPuzzles)) this.data.solvedPuzzles = [];
+        if (!this.data.boardMigratedV2) {
+          this.data.activeBoard = 'walnut_travertine';
+          this.data.boardMigratedV2 = true;
+          this.save();
+        }
+      } else {
+        this.data.boardMigratedV2 = true;
       }
     } catch (e) {}
   }
