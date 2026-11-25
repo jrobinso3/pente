@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pente-pwa-v4';
+const CACHE_NAME = 'pente-pwa-v5';
 const APP_SHELL = [
   './',
   './index.html',
@@ -13,6 +13,7 @@ const APP_SHELL = [
   './src/engine/PenteGame.js',
   './src/engine/PenteAI.js',
   './src/audio/SoundFX.js',
+  './src/net/PeerSession.js',
   './src/state/ProfileStore.js',
   './src/ui/BoardRenderer.js',
   './src/ui/MentorCoach.js',

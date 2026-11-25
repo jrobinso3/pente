@@ -29,8 +29,53 @@ export class ModalManager {
     this._introIdx = 0;
     this._introBeat = 0;
     this._activeIntroBeats = [];
+    this.peer = null;
 
     this._bindEvents();
+  }
+
+  setPeerSession(peer) {
+    this.peer = peer;
+  }
+
+  setP2PStatus(status) {
+    const labels = {
+      gathering: 'Gathering network routes…',
+      waiting_answer: 'Invite ready — waiting for friend’s answer',
+      waiting_host: 'Answer ready — send it back to host',
+      connecting: 'Connecting peer-to-peer…',
+      connected: 'Connected peer-to-peer',
+      closed: 'Disconnected'
+    };
+    if (this.els.p2pStatusText) {
+      this.els.p2pStatusText.textContent = labels[status] || 'Direct peer-to-peer via WebRTC';
+    }
+  }
+
+  openP2PModal(tab = 'host', prefillOffer = '') {
+    const { els } = this;
+    this._switchP2PTab(tab);
+    if (prefillOffer) {
+      els.p2pOfferInput.value = prefillOffer;
+    }
+    this._showModal(els.p2pModal);
+  }
+
+  closeP2PModal() {
+    this._hideModal(this.els.p2pModal);
+  }
+
+  _switchP2PTab(tab) {
+    const { els } = this;
+    const isHost = tab === 'host';
+    els.p2pHostPane.classList.toggle('hidden', !isHost);
+    els.p2pJoinPane.classList.toggle('hidden', isHost);
+    els.btnP2PTabHost.classList.toggle('bg-[#161616]', isHost);
+    els.btnP2PTabHost.classList.toggle('text-white', isHost);
+    els.btnP2PTabHost.classList.toggle('text-[#6E675F]', !isHost);
+    els.btnP2PTabJoin.classList.toggle('bg-[#161616]', !isHost);
+    els.btnP2PTabJoin.classList.toggle('text-white', !isHost);
+    els.btnP2PTabJoin.classList.toggle('text-[#6E675F]', isHost);
   }
 
   _showModal(el) {
@@ -718,6 +763,9 @@ export class ModalManager {
 
     // Home Menu & Achievements & Rules
     els.btnGoHome.addEventListener('click', () => {
+      if (state.gameMode === 'p2p' && this.peer && this.peer.connected) {
+        this.peer.close(false);
+      }
       this.onUpdateHUD();
       els.homeMenu.classList.remove('hidden');
     });
@@ -742,6 +790,89 @@ export class ModalManager {
       state.mentorMode = false;
       els.homeMenu.classList.add('hidden');
       this.onStartNewGame();
+    });
+    els.btnHomeP2P.addEventListener('click', () => this.openP2PModal('host'));
+
+    // Online P2P Modal
+    els.btnCloseP2P.addEventListener('click', () => this.closeP2PModal());
+    els.btnP2PTabHost.addEventListener('click', () => this._switchP2PTab('host'));
+    els.btnP2PTabJoin.addEventListener('click', () => this._switchP2PTab('join'));
+
+    const copyText = async (text, label) => {
+      try {
+        await navigator.clipboard.writeText(text);
+        this.showToast(`Copied ${label}`);
+      } catch (e) {
+        this.showToast(`Select & copy ${label} manually`);
+      }
+    };
+
+    els.btnP2PCreateOffer.addEventListener('click', async () => {
+      if (!this.peer) return;
+      els.btnP2PCreateOffer.disabled = true;
+      els.btnP2PCreateOffer.textContent = 'Creating Invite…';
+      try {
+        const code = await this.peer.createOffer();
+        els.p2pOfferOutput.value = code;
+        els.p2pOfferBox.classList.remove('hidden');
+      } catch (e) {
+        this.showToast('Failed to create WebRTC invite');
+      } finally {
+        els.btnP2PCreateOffer.disabled = false;
+        els.btnP2PCreateOffer.textContent = '1. Create Invite Code';
+      }
+    });
+
+    els.btnP2PCopyLink.addEventListener('click', () => {
+      const code = els.p2pOfferOutput.value.trim();
+      if (!code) return;
+      const url = `${window.location.origin}${window.location.pathname}?offer=${code}`;
+      copyText(url, 'invite link');
+    });
+
+    els.btnP2PCopyOffer.addEventListener('click', () => {
+      const code = els.p2pOfferOutput.value.trim();
+      if (code) copyText(code, 'invite code');
+    });
+
+    els.btnP2PConnect.addEventListener('click', async () => {
+      if (!this.peer) return;
+      const ans = els.p2pAnswerInput.value.trim();
+      if (!ans) {
+        this.showToast('Paste your friend’s answer code first');
+        return;
+      }
+      try {
+        await this.peer.acceptAnswer(ans);
+      } catch (e) {
+        this.showToast('Invalid answer code');
+      }
+    });
+
+    els.btnP2PCreateAnswer.addEventListener('click', async () => {
+      if (!this.peer) return;
+      const offer = els.p2pOfferInput.value.trim();
+      if (!offer) {
+        this.showToast('Paste the host’s invite link or code first');
+        return;
+      }
+      els.btnP2PCreateAnswer.disabled = true;
+      els.btnP2PCreateAnswer.textContent = 'Generating Answer…';
+      try {
+        const ans = await this.peer.acceptOfferAndCreateAnswer(offer);
+        els.p2pAnswerOutput.value = ans;
+        els.p2pAnswerBox.classList.remove('hidden');
+      } catch (e) {
+        this.showToast('Invalid invite link or code');
+      } finally {
+        els.btnP2PCreateAnswer.disabled = false;
+        els.btnP2PCreateAnswer.textContent = 'Generate Answer Code';
+      }
+    });
+
+    els.btnP2PCopyAnswer.addEventListener('click', () => {
+      const ans = els.p2pAnswerOutput.value.trim();
+      if (ans) copyText(ans, 'answer code');
     });
     els.btnHomePuzzles.addEventListener('click', () => this.openPuzzlesModal());
     els.btnHomeShop.addEventListener('click', () => {

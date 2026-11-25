@@ -16,6 +16,7 @@ import { PenteGame } from '../engine/PenteGame.js';
 import { PenteAI } from '../engine/PenteAI.js';
 import { SoundFX } from '../audio/SoundFX.js';
 import { ProfileStore } from '../state/ProfileStore.js';
+import { PeerSession } from '../net/PeerSession.js';
 import { BoardRenderer } from '../ui/BoardRenderer.js';
 import { MentorCoach } from '../ui/MentorCoach.js';
 import { ModalManager } from '../ui/ModalManager.js';
@@ -97,6 +98,20 @@ export class PenteApp {
       showToast: this.showToast
     });
 
+    this.peer = new PeerSession({
+      onStateChange: (st) => this.modals.setP2PStatus(st),
+      onOpen: () => this._onPeerOpen(),
+      onMessage: (msg) => this._onPeerMessage(msg),
+      onClose: () => {
+        if (this.state.gameMode === 'p2p') {
+          this.showToast('Peer disconnected', 3000);
+          this.updateHUD();
+        }
+      },
+      onError: () => this.showToast('WebRTC connection error')
+    });
+    this.modals.setPeerSession(this.peer);
+
     this._bindToolbarEvents();
   }
 
@@ -105,6 +120,15 @@ export class PenteApp {
     this.state.profile = this.profileStore.data;
     this.renderer.resize();
     this.startNewGame();
+
+    const params = new URLSearchParams(window.location.search);
+    const offer = params.get('offer');
+    if (offer) {
+      this.modals.openP2PModal('join', offer);
+      try {
+        window.history.replaceState({}, '', window.location.pathname);
+      } catch (e) {}
+    }
   }
 
   showToast(msg, duration = 2200) {
@@ -145,9 +169,10 @@ export class PenteApp {
     const { state, game, els } = this;
     const isPuzzle = state.gameMode === 'puzzle';
     const isLocal2P = state.gameMode === 'local2p';
+    const isP2P = state.gameMode === 'p2p';
     const profile = AI_PROFILES[state.tier];
     els.humanNameLabel.textContent = isLocal2P ? 'Player 1' : 'You';
-    els.aiNameLabel.textContent = isLocal2P ? 'Player 2' : `${profile.name}`;
+    els.aiNameLabel.textContent = isLocal2P ? 'Player 2' : isP2P ? 'Peer' : `${profile.name}`;
     const tags = [];
     if (game.tournamentRule) tags.push('Tournament');
     if (game.adjacentOnly) tags.push('Adjacent');
@@ -157,9 +182,11 @@ export class PenteApp {
       ? 'Puzzle Mode'
       : isLocal2P
         ? 'Pass & Play' + (tags.length ? ` • ${tags.join(', ')}` : '')
-        : `vs ${profile.name}` + (tags.length ? ` • ${tags.join(', ')}` : '');
+        : isP2P
+          ? 'Online P2P' + (tags.length ? ` • ${tags.join(', ')}` : '')
+          : `vs ${profile.name}` + (tags.length ? ` • ${tags.join(', ')}` : '');
 
-    els.aiAvatarImg.classList.toggle('hidden', isLocal2P);
+    els.aiAvatarImg.classList.toggle('hidden', isLocal2P || isP2P);
     els.aiAvatarImg.src = profile.avatar;
     els.pointsBalance.textContent = `$${state.profile.points}`;
     els.homeCoinsBalance.textContent = `$${state.profile.points}`;
@@ -189,8 +216,8 @@ export class PenteApp {
     els.cardAI.classList.toggle('opacity-70', !aiTurn);
 
     els.moveCountBadge.textContent = game.moveCount + 1;
-    els.btnUndo.disabled = game.history.length === 0 || state.aiThinking;
-    els.btnHint.disabled = game.winner !== 0 || state.aiThinking || (!isLocal2P && game.turn !== state.humanColor);
+    els.btnUndo.disabled = isP2P || game.history.length === 0 || state.aiThinking;
+    els.btnHint.disabled = isP2P || game.winner !== 0 || state.aiThinking || (!isLocal2P && game.turn !== state.humanColor);
 
     els.matchPlayersStrip.classList.toggle('hidden', isPuzzle);
     els.aiDialogueBox.classList.toggle('hidden', isPuzzle);
@@ -198,9 +225,14 @@ export class PenteApp {
       const activeName = game.turn === BLACK ? 'Player 1' : 'Player 2';
       els.aiDialogueSpeaker.textContent = `${activeName}'s turn`;
       els.aiDialogueText.textContent = game.moveCount === 0 ? 'Open on the center point' : 'Tap an intersection to place a bead';
+    } else if (isP2P) {
+      els.aiDialogueSpeaker.textContent = this.peer.connected
+        ? (game.turn === state.humanColor ? 'Your turn' : "Peer's turn")
+        : 'Disconnected';
+      els.aiDialogueText.textContent = this.peer.connected ? 'WebRTC P2P connected' : 'Peer left the match';
     }
     els.puzzleBar.classList.toggle('hidden', !isPuzzle);
-    els.btnMentor.classList.toggle('hidden', isPuzzle || isLocal2P);
+    els.btnMentor.classList.toggle('hidden', isPuzzle || isLocal2P || isP2P);
 
     const isStory = state.gameMode === 'story';
     els.storyBanner.classList.toggle('hidden', !isStory);
@@ -302,7 +334,15 @@ export class PenteApp {
     this.renderer.resize();
 
     if (game.winner !== 0) {
+      if (state.gameMode === 'p2p') {
+        this.peer.send({ type: 'move', r, c });
+      }
       this.finishGame();
+      return;
+    }
+
+    if (state.gameMode === 'p2p') {
+      this.peer.send({ type: 'move', r, c });
       return;
     }
 
@@ -351,16 +391,20 @@ export class PenteApp {
 
   finishGame() {
     const { state, game, els } = this;
-    if (state.gameMode === 'local2p') {
+    if (state.gameMode === 'local2p' || state.gameMode === 'p2p') {
+      const isP2P = state.gameMode === 'p2p';
       const p1Won = game.winner === BLACK;
-      this.sfx.playWin(true);
+      const humanWon = isP2P ? (game.winner === state.humanColor) : true;
+      this.sfx.playWin(humanWon);
       els.winBadgeIcon.textContent = 'Π';
-      els.winTitle.textContent = p1Won ? 'Player 1 Wins' : 'Player 2 Wins';
+      els.winTitle.textContent = isP2P
+        ? (humanWon ? 'You Win' : 'Peer Wins')
+        : (p1Won ? 'Player 1 Wins' : 'Player 2 Wins');
       els.winReason.textContent = game.winReason;
       els.winQuoteBox.classList.add('hidden');
       els.statMoves.textContent = game.moveCount;
-      els.statHumanCaps.textContent = game.captures[BLACK];
-      els.statAICaps.textContent = game.captures[WHITE];
+      els.statHumanCaps.textContent = game.captures[isP2P ? state.humanColor : BLACK];
+      els.statAICaps.textContent = game.captures[isP2P ? state.aiColor : WHITE];
       els.btnBackToProgress.textContent = 'Main Menu';
       this.updateHUD();
       els.gameOverModal.classList.remove('hidden');
@@ -422,14 +466,15 @@ export class PenteApp {
     els.gameOverModal.classList.add('flex');
   }
 
-  startNewGame() {
+  startNewGame(fromRemote = false) {
     const { state, game, els } = this;
-    game.reset({
+    const rules = {
       tournamentRule: els.chkTournament.checked,
       adjacentOnly: els.chkAdjacentOnly.checked,
       keryoRule: els.chkKeryo.checked,
       noCaptures: els.chkNoCaptures.checked
-    });
+    };
+    game.reset(rules);
 
     state.aimPoint = null;
     state.previewPoint = null;
@@ -441,12 +486,73 @@ export class PenteApp {
     this.updateHUD();
     this.renderer.draw();
 
-    if (state.gameMode === 'local2p') {
-      this.showToast("Pass & Play — Player 1 opens on center");
+    if (state.gameMode === 'p2p') {
+      if (!fromRemote && this.peer.connected) {
+        this.peer.send({ type: 'new_game', rules });
+      }
+      this.showToast(game.turn === state.humanColor ? 'P2P Match — Your turn to open' : 'P2P Match — Waiting for peer');
+    } else if (state.gameMode === 'local2p') {
+      this.showToast('Pass & Play — Player 1 opens on center');
     } else if (game.turn === state.aiColor) {
       this.scheduleAIMove();
     } else {
       this.showToast('Your turn — open on the center point');
+    }
+  }
+
+  _onPeerOpen() {
+    const { state, els } = this;
+    state.gameMode = 'p2p';
+    state.mentorMode = false;
+    this.modals.closeP2PModal();
+    els.homeMenu.classList.add('hidden');
+    if (this.peer.role === 'host') {
+      state.humanColor = BLACK;
+      state.aiColor = WHITE;
+      const rules = {
+        tournamentRule: els.chkTournament.checked,
+        adjacentOnly: els.chkAdjacentOnly.checked,
+        keryoRule: els.chkKeryo.checked,
+        noCaptures: els.chkNoCaptures.checked
+      };
+      this.peer.send({ type: 'hello', rules });
+      this.startNewGame(true);
+    } else {
+      state.humanColor = WHITE;
+      state.aiColor = BLACK;
+      this.startNewGame(true);
+    }
+    this.showToast('WebRTC P2P connected!');
+  }
+
+  _onPeerMessage(msg) {
+    const { state, game, els } = this;
+    if (!msg || !msg.type) return;
+    if (msg.type === 'hello' || msg.type === 'new_game') {
+      if (msg.rules) {
+        els.chkTournament.checked = !!msg.rules.tournamentRule;
+        els.chkAdjacentOnly.checked = !!msg.rules.adjacentOnly;
+        els.chkKeryo.checked = !!msg.rules.keryoRule;
+        els.chkNoCaptures.checked = !!msg.rules.noCaptures;
+      }
+      this.startNewGame(true);
+      if (msg.type === 'new_game') this.showToast('Peer started a rematch');
+      return;
+    }
+    if (msg.type === 'move' && state.gameMode === 'p2p') {
+      if (game.turn !== state.aiColor || !game.isLegalMove(msg.r, msg.c)) return;
+      const rec = game.makeMove(msg.r, msg.c);
+      this.sfx.playStone();
+      if (rec && rec.capturedStones.length > 0) {
+        this.sfx.playCapture();
+        this.renderer.triggerCaptureFlash(rec.capturedStones, state.humanColor);
+        this.showToast(`Peer captured ${rec.pairsGained} pair${rec.pairsGained > 1 ? 's' : ''}!`);
+      }
+      this.updateHUD();
+      this.renderer.draw();
+      if (game.winner !== 0) {
+        this.finishGame();
+      }
     }
   }
 
@@ -481,8 +587,8 @@ export class PenteApp {
       els.btnSound.textContent = this.sfx.enabled ? 'Sound: On' : 'Sound: Muted';
     });
 
-    els.btnNewGame.addEventListener('click', this.startNewGame);
-    els.btnPlayAgain.addEventListener('click', this.startNewGame);
+    els.btnNewGame.addEventListener('click', () => this.startNewGame(false));
+    els.btnPlayAgain.addEventListener('click', () => this.startNewGame(false));
     els.btnReviewBoard.addEventListener('click', () => {
       els.gameOverModal.classList.add('hidden');
       els.gameOverModal.classList.remove('flex');
@@ -545,9 +651,13 @@ export class PenteApp {
       'winReason', 'statMoves', 'statHumanCaps', 'statAICaps',
       'btnReviewBoard', 'btnPlayAgain', 'setupModal', 'btnCloseSetup',
       'btnApplyStart', 'btnSideBlack', 'btnSideWhite', 'homeMenu',
-      'homeCoinsBalance', 'btnHomeCoins', 'btnHomeStory', 'btnHomeFreePlay', 'btnHomeLocal2P',
+      'homeCoinsBalance', 'btnHomeCoins', 'btnHomeStory', 'btnHomeFreePlay', 'btnHomeLocal2P', 'btnHomeP2P',
       'btnHomePuzzles', 'btnHomeShop', 'btnHomeAchievements', 'homeAchCount',
       'humanNameLabel', 'winQuoteBox',
+      'p2pModal', 'p2pStatusText', 'btnCloseP2P', 'btnP2PTabHost', 'btnP2PTabJoin',
+      'p2pHostPane', 'p2pJoinPane', 'btnP2PCreateOffer', 'p2pOfferBox', 'p2pOfferOutput',
+      'btnP2PCopyLink', 'btnP2PCopyOffer', 'p2pAnswerInput', 'btnP2PConnect',
+      'p2pOfferInput', 'btnP2PCreateAnswer', 'p2pAnswerBox', 'p2pAnswerOutput', 'btnP2PCopyAnswer',
       'achievementsModal', 'achModalCount', 'achCoinsDisplay',
       'btnCloseAchievements', 'achievementsBody', 'btnHomeRules', 'btnGoHome',
       'puzzlesModal', 'puzzlesCoinsDisplay', 'btnClosePuzzles', 'puzzlesBody',
