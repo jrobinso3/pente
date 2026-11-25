@@ -285,10 +285,8 @@ export class ModalManager {
     els.shopPointsDisplay.textContent = `$${state.profile.points}`;
     document.querySelectorAll('.shop-tab-btn').forEach((btn) => {
       const active = btn.dataset.shoptab === state.shopTab;
-      btn.classList.toggle('bg-[#161616] text-white', active);
-      btn.classList.toggle('text-[#161616]', active);
-      btn.classList.toggle('border', active);
-      btn.classList.toggle('border-[#161616]/20', active);
+      btn.classList.toggle('bg-[#161616]', active);
+      btn.classList.toggle('text-white', active);
       btn.classList.toggle('text-[#6E675F]', !active);
     });
 

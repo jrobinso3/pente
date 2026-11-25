@@ -48,8 +48,8 @@ export class BoardRenderer {
   getMetrics() {
     const size = this.state.boardPx;
     const active = this.state.profile && this.state.profile.activeBoard;
-    const isOrig = active === 'original_78';
-    const isWalnut = !active || active === 'walnut_travertine';
+    const isOrig = !active || active === 'original_78';
+    const isWalnut = active === 'walnut_travertine';
     const pad = isOrig
       ? Math.max(22, size * 0.082)
       : isWalnut
@@ -113,7 +113,7 @@ export class BoardRenderer {
       ctx.translate(-cx, -cy);
     }
 
-    const bTheme = BOARD_THEMES[state.profile.activeBoard] || BOARD_THEMES.walnut_travertine;
+    const bTheme = BOARD_THEMES[state.profile.activeBoard] || BOARD_THEMES.original_78;
 
     // 1. Board Surface Background
     if (bTheme.walnutTravertine) {

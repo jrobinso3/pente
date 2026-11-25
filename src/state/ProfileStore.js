@@ -12,12 +12,12 @@ export class ProfileStore {
       unlocked: [],
       ownedRivals: ['novice'],
       ownedBeads: ['classic'],
-      ownedBoards: ['walnut_travertine', 'hideaway', 'original_78'],
+      ownedBoards: ['original_78', 'hideaway'],
       ownedPuzzlePacks: ['novice'],
       solvedPuzzles: [],
       activeBead: 'classic',
-      activeBoard: 'walnut_travertine',
-      boardMigratedV2: false,
+      activeBoard: 'original_78',
+      boardDefault78V3: false,
       drillsSolved: 0,
       storyCleared: [],
       storyPlays: {},
@@ -34,21 +34,21 @@ export class ProfileStore {
         const parsed = JSON.parse(raw);
         this.data = Object.assign({}, this.data, parsed);
         if (!Array.isArray(this.data.ownedBeads)) this.data.ownedBeads = ['classic'];
-        if (!Array.isArray(this.data.ownedBoards)) this.data.ownedBoards = ['walnut_travertine', 'hideaway', 'original_78'];
-        if (!this.data.ownedBoards.includes('walnut_travertine')) this.data.ownedBoards.unshift('walnut_travertine');
+        if (!Array.isArray(this.data.ownedBoards)) this.data.ownedBoards = ['original_78', 'hideaway'];
         if (!Array.isArray(this.data.unlocked)) this.data.unlocked = [];
         if (!Array.isArray(this.data.storyCleared)) this.data.storyCleared = [];
         if (!this.data.storyPlays || typeof this.data.storyPlays !== 'object') this.data.storyPlays = {};
         if (!Array.isArray(this.data.ownedRivals)) this.data.ownedRivals = ['novice'];
         if (!Array.isArray(this.data.ownedPuzzlePacks)) this.data.ownedPuzzlePacks = ['novice'];
         if (!Array.isArray(this.data.solvedPuzzles)) this.data.solvedPuzzles = [];
-        if (!this.data.boardMigratedV2) {
-          this.data.activeBoard = 'walnut_travertine';
-          this.data.boardMigratedV2 = true;
+        if (!this.data.boardDefault78V3) {
+          this.data.ownedBoards = this.data.ownedBoards.filter((b) => b !== 'walnut_travertine');
+          this.data.activeBoard = 'original_78';
+          this.data.boardDefault78V3 = true;
           this.save();
         }
       } else {
-        this.data.boardMigratedV2 = true;
+        this.data.boardDefault78V3 = true;
       }
     } catch (e) {}
   }

@@ -128,7 +128,7 @@ export const BEAD_THEMES = {
 export const BOARD_THEMES = {
   walnut_travertine: {
     name: 'Walnut & Travertine',
-    cost: 0,
+    cost: 120,
     desc: 'Oiled walnut frame with honed limestone',
     walnutTravertine: true,
     bg0: '#e8decb',
