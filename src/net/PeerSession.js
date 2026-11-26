@@ -1,3 +1,5 @@
+import { WssRelay } from './WssRelay.js';
+
 const ROOM_PREFIX = 'pente-v1-';
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 
@@ -5,34 +7,20 @@ const RTC_CONFIG = {
   iceServers: [
     { urls: 'stun:stun.l.google.com:19302' },
     { urls: 'stun:stun1.l.google.com:19302' },
-    { urls: 'stun:stun.cloudflare.com:3478' },
-    {
-      urls: 'turn:openrelay.metered.ca:80',
-      username: 'openrelayproject',
-      credential: 'openrelayproject'
-    },
-    {
-      urls: 'turn:openrelay.metered.ca:443',
-      username: 'openrelayproject',
-      credential: 'openrelayproject'
-    },
-    {
-      urls: 'turns:openrelay.metered.ca:443?transport=tcp',
-      username: 'openrelayproject',
-      credential: 'openrelayproject'
-    }
-  ],
-  iceCandidatePoolSize: 4
+    { urls: 'stun:stun.cloudflare.com:3478' }
+  ]
 };
 
 /**
- * Encapsulates a WebRTC peer-to-peer session using PeerJS signaling
- * with short 6-character room codes. Gameplay runs directly over WebRTC DataChannel.
+ * Encapsulates a WebRTC peer-to-peer session (PeerJS) with automatic
+ * WSS relay fallback if NAT/firewalls block direct ICE traversal.
  */
 export class PeerSession {
   constructor({ onOpen, onMessage, onClose, onStateChange, onError } = {}) {
     this.peer = null;
     this.conn = null;
+    this.relay = null;
+    this.transport = null; // 'webrtc' | 'relay'
     this.role = null; // 'host' | 'guest'
     this.roomCode = '';
     this.connected = false;
@@ -71,19 +59,31 @@ export class PeerSession {
     return clean;
   }
 
-  _requirePeerJS() {
-    if (typeof window === 'undefined' || typeof window.Peer !== 'function') {
-      throw new Error('PeerJS library not loaded (check internet connection)');
+  _activateTransport(kind) {
+    if (this.connected) return;
+    this.connected = true;
+    this.transport = kind;
+    if (kind === 'webrtc' && this.relay) {
+      this.relay.close();
+      this.relay = null;
+    } else if (kind === 'relay') {
+      if (this.conn) {
+        try { this.conn.close(); } catch (e) {}
+        this.conn = null;
+      }
+      if (this.peer) {
+        try { this.peer.destroy(); } catch (e) {}
+        this.peer = null;
+      }
     }
+    this.onStateChange('connected');
+    this.onOpen();
   }
 
-  _bindConnection(conn) {
+  _bindWebRTCConnection(conn, onIceFail) {
     this.conn = conn;
     const handleOpen = () => {
-      if (this.connected) return;
-      this.connected = true;
-      this.onStateChange('connected');
-      this.onOpen();
+      this._activateTransport('webrtc');
     };
 
     if (conn.open) {
@@ -92,135 +92,221 @@ export class PeerSession {
       conn.on('open', handleOpen);
     }
 
+    if (conn.peerConnection) {
+      conn.peerConnection.addEventListener('iceconnectionstatechange', () => {
+        const st = conn.peerConnection && conn.peerConnection.iceConnectionState;
+        if ((st === 'failed' || st === 'disconnected') && !this.connected && onIceFail) {
+          onIceFail();
+        }
+      });
+    }
+
     conn.on('data', (data) => {
-      if (data && typeof data === 'object') {
-        this.onMessage(data);
-      }
+      if (this.transport !== 'webrtc') return;
+      if (data && typeof data === 'object') this.onMessage(data);
     });
     conn.on('close', () => {
-      const wasConnected = this.connected;
+      if (this.transport !== 'webrtc') return;
+      const was = this.connected;
       this.connected = false;
       this.onStateChange('closed');
-      if (wasConnected) this.onClose();
+      if (was) this.onClose();
     });
-    conn.on('error', (err) => {
-      this.onError(err);
+    conn.on('error', () => {
+      if (!this.connected && onIceFail) onIceFail();
     });
   }
 
-  hostRoom() {
-    this._requirePeerJS();
+  _startRelayListener(roomCode) {
+    this.relay = new WssRelay({
+      onMessage: (payload) => {
+        if (!payload) return;
+        if (payload._relayJoin && this.role === 'host' && !this.connected) {
+          this.relay.send({ _relayAccept: true });
+          this._activateTransport('relay');
+          return;
+        }
+        if (this.transport === 'relay') {
+          this.onMessage(payload);
+        }
+      },
+      onClose: () => {
+        if (this.transport !== 'relay') return;
+        const was = this.connected;
+        this.connected = false;
+        this.onStateChange('closed');
+        if (was) this.onClose();
+      },
+      onError: (err) => this.onError(err)
+    });
+    return this.relay.connect(roomCode);
+  }
+
+  async hostRoom() {
     this.close(false);
     this.role = 'host';
     this.roomCode = PeerSession.generateRoomCode(6);
     this.onStateChange('creating');
 
-    return new Promise((resolve, reject) => {
-      const peer = new window.Peer(ROOM_PREFIX + this.roomCode, {
-        debug: 0,
-        config: RTC_CONFIG
-      });
-      this.peer = peer;
+    // Start WSS relay listener in parallel so guest can always fall back cleanly
+    const relayReady = this._startRelayListener(this.roomCode).catch(() => {});
 
-      let settled = false;
-      const timer = setTimeout(() => {
-        if (!settled) {
-          settled = true;
-          this.close(false);
-          reject(new Error('Signaling server timed out — try again'));
-        }
-      }, 12000);
+    if (typeof window !== 'undefined' && typeof window.Peer === 'function') {
+      try {
+        await new Promise((resolve, reject) => {
+          const peer = new window.Peer(ROOM_PREFIX + this.roomCode, {
+            debug: 0,
+            config: RTC_CONFIG
+          });
+          this.peer = peer;
+          let settled = false;
+          const timer = setTimeout(() => {
+            if (!settled) {
+              settled = true;
+              reject(new Error('PeerJS timeout'));
+            }
+          }, 5000);
 
-      peer.on('open', () => {
-        if (settled) return;
-        settled = true;
-        clearTimeout(timer);
-        this.onStateChange('waiting_guest');
-        resolve(this.roomCode);
-      });
-      peer.on('connection', (conn) => {
-        this.onStateChange('connecting');
-        this._bindConnection(conn);
-      });
-      peer.on('disconnected', () => {
-        if (this.peer === peer && !peer.destroyed) {
-          try { peer.reconnect(); } catch (e) {}
-        }
-      });
-      peer.on('error', (err) => {
-        clearTimeout(timer);
-        if (!settled) {
-          settled = true;
-          reject(err);
-        } else {
-          this.onError(err);
-        }
-      });
-    });
+          peer.on('open', () => {
+            if (settled) return;
+            settled = true;
+            clearTimeout(timer);
+            resolve();
+          });
+          peer.on('connection', (conn) => {
+            this.onStateChange('connecting');
+            this._bindWebRTCConnection(conn);
+          });
+          peer.on('disconnected', () => {
+            if (this.peer === peer && !peer.destroyed) {
+              try { peer.reconnect(); } catch (e) {}
+            }
+          });
+          peer.on('error', (err) => {
+            clearTimeout(timer);
+            if (!settled) {
+              settled = true;
+              reject(err);
+            }
+          });
+        });
+      } catch (e) {
+        // PeerJS unavailable; relay listener is still active
+        await relayReady;
+      }
+    } else {
+      await relayReady;
+    }
+
+    this.onStateChange('waiting_guest');
+    return this.roomCode;
   }
 
-  joinRoom(codeOrUrl) {
-    this._requirePeerJS();
+  async joinRoom(codeOrUrl) {
     const code = PeerSession.parseRoomCode(codeOrUrl);
     this.close(false);
     this.role = 'guest';
     this.roomCode = code;
     this.onStateChange('connecting');
 
-    return new Promise((resolve, reject) => {
-      const peer = new window.Peer(undefined, {
-        debug: 0,
-        config: RTC_CONFIG
-      });
-      this.peer = peer;
+    // Try direct WebRTC first with a 4.5s budget, then seamlessly fall back to WSS relay
+    if (typeof window !== 'undefined' && typeof window.Peer === 'function') {
+      const webrtcOk = await new Promise((resolve) => {
+        let settled = false;
+        const finish = (ok) => {
+          if (settled) return;
+          settled = true;
+          clearTimeout(timer);
+          resolve(ok);
+        };
+        const timer = setTimeout(() => finish(false), 4500);
 
+        const peer = new window.Peer(undefined, { debug: 0, config: RTC_CONFIG });
+        this.peer = peer;
+        peer.on('open', () => {
+          const conn = peer.connect(ROOM_PREFIX + code, { reliable: true });
+          this._bindWebRTCConnection(conn, () => finish(false));
+          if (conn.open) finish(true);
+          else conn.on('open', () => finish(true));
+        });
+        peer.on('error', () => finish(false));
+      });
+
+      if (webrtcOk) return code;
+      if (this.peer) {
+        try { this.peer.destroy(); } catch (e) {}
+        this.peer = null;
+      }
+      this.conn = null;
+    }
+
+    // Automatic WSS Relay fallback
+    await new Promise((resolve, reject) => {
       let settled = false;
       const timer = setTimeout(() => {
         if (!settled) {
           settled = true;
           this.close(false);
-          reject(new Error('Connection timed out — verify the room code is open'));
+          reject(new Error('Could not reach room — verify the host room is open'));
         }
-      }, 15000);
+      }, 8000);
 
-      peer.on('open', () => {
-        const conn = peer.connect(ROOM_PREFIX + code, {
-          reliable: true,
-          serialization: 'json'
-        });
-        this._bindConnection(conn);
-        const onReady = () => {
-          if (!settled) {
-            settled = true;
-            clearTimeout(timer);
-            resolve(code);
+      this.relay = new WssRelay({
+        onMessage: (payload) => {
+          if (!payload) return;
+          if (payload._relayAccept && !this.connected) {
+            if (!settled) {
+              settled = true;
+              clearTimeout(timer);
+              this._activateTransport('relay');
+              resolve(code);
+            }
+            return;
           }
-        };
-        if (conn.open) onReady();
-        else conn.on('open', onReady);
+          if (this.transport === 'relay') {
+            this.onMessage(payload);
+          }
+        },
+        onClose: () => {
+          if (this.transport !== 'relay') return;
+          const was = this.connected;
+          this.connected = false;
+          this.onStateChange('closed');
+          if (was) this.onClose();
+        },
+        onError: (err) => this.onError(err)
       });
-      peer.on('error', (err) => {
-        clearTimeout(timer);
+
+      this.relay.connect(code).then(() => {
+        this.relay.send({ _relayJoin: true });
+      }).catch((err) => {
         if (!settled) {
           settled = true;
-          this.close(false);
+          clearTimeout(timer);
           reject(err);
-        } else {
-          this.onError(err);
         }
       });
     });
+
+    return code;
   }
 
   send(payload) {
-    if (!this.conn || !this.connected) return false;
-    this.conn.send(payload);
-    return true;
+    if (!this.connected) return false;
+    if (this.transport === 'webrtc' && this.conn) {
+      this.conn.send(payload);
+      return true;
+    }
+    if (this.transport === 'relay' && this.relay) {
+      return this.relay.send(payload);
+    }
+    return false;
   }
 
   close(notify = true) {
     const wasConnected = this.connected;
     this.connected = false;
+    this.transport = null;
     if (this.conn) {
       try { this.conn.close(); } catch (e) {}
       this.conn = null;
@@ -228,6 +314,10 @@ export class PeerSession {
     if (this.peer) {
       try { this.peer.destroy(); } catch (e) {}
       this.peer = null;
+    }
+    if (this.relay) {
+      this.relay.close();
+      this.relay = null;
     }
     if (notify && wasConnected) this.onClose();
   }
