@@ -102,6 +102,7 @@ export class PenteApp {
 
     this.peer = new PeerSession({
       onStateChange: (st) => this.modals.setP2PStatus(st),
+      onLog: (msg) => this.modals.appendP2PLog(msg),
       onOpen: () => this._onPeerOpen(),
       onMessage: (msg) => this._onPeerMessage(msg),
       onClose: () => {
@@ -709,7 +710,7 @@ export class PenteApp {
       'humanNameLabel', 'winQuoteBox',
       'p2pModal', 'p2pStatusText', 'btnCloseP2P', 'btnP2PTabHost', 'btnP2PTabJoin',
       'p2pHostPane', 'p2pJoinPane', 'btnP2PCreateRoom', 'p2pRoomBox', 'p2pRoomCodeText',
-      'btnP2PCopyLink', 'btnP2PCopyCode', 'p2pRoomInput', 'btnP2PJoinRoom',
+      'btnP2PCopyLink', 'btnP2PCopyCode', 'p2pRoomInput', 'btnP2PJoinRoom', 'p2pLogBox',
       'achievementsModal', 'achModalCount', 'achCoinsDisplay',
       'btnCloseAchievements', 'achievementsBody', 'btnHomeRules', 'btnGoHome',
       'puzzlesModal', 'puzzlesCoinsDisplay', 'btnClosePuzzles', 'puzzlesBody',

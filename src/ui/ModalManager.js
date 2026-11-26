@@ -49,6 +49,19 @@ export class ModalManager {
     if (this.els.p2pStatusText) {
       this.els.p2pStatusText.textContent = labels[status] || 'Share a code to play with a friend.';
     }
+    this.appendP2PLog(`state:${status}`);
+  }
+
+  clearP2PLog() {
+    if (this.els.p2pLogBox) this.els.p2pLogBox.textContent = '';
+  }
+
+  appendP2PLog(msg) {
+    const box = this.els.p2pLogBox;
+    if (!box) return;
+    const ts = new Date().toLocaleTimeString([], { hour12: false, minute: '2-digit', second: '2-digit' });
+    box.textContent = (box.textContent && box.textContent !== 'Idle' ? box.textContent + '\n' : '') + `[${ts}] ${msg}`;
+    box.scrollTop = box.scrollHeight;
   }
 
   openP2PModal(tab = 'host', prefillRoom = '') {
