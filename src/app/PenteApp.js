@@ -520,12 +520,17 @@ export class PenteApp {
         keryoRule: els.chkKeryo.checked,
         noCaptures: els.chkNoCaptures.checked
       };
-      this.peer.send({ type: 'hello', rules });
       this.startNewGame(true);
+      setTimeout(() => {
+        if (this.peer.connected) this.peer.send({ type: 'hello', rules });
+      }, 120);
     } else {
       state.humanColor = WHITE;
       state.aiColor = BLACK;
       this.startNewGame(true);
+      setTimeout(() => {
+        if (this.peer.connected) this.peer.send({ type: 'ready' });
+      }, 60);
     }
     this.showToast('WebRTC P2P connected!');
   }
@@ -533,6 +538,18 @@ export class PenteApp {
   _onPeerMessage(msg) {
     const { state, game, els } = this;
     if (!msg || !msg.type) return;
+    if (msg.type === 'ready' && this.peer.role === 'host') {
+      this.peer.send({
+        type: 'hello',
+        rules: {
+          tournamentRule: els.chkTournament.checked,
+          adjacentOnly: els.chkAdjacentOnly.checked,
+          keryoRule: els.chkKeryo.checked,
+          noCaptures: els.chkNoCaptures.checked
+        }
+      });
+      return;
+    }
     if (msg.type === 'hello' || msg.type === 'new_game') {
       if (msg.rules) {
         els.chkTournament.checked = !!msg.rules.tournamentRule;

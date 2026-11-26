@@ -1,6 +1,30 @@
 const ROOM_PREFIX = 'pente-v1-';
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 
+const RTC_CONFIG = {
+  iceServers: [
+    { urls: 'stun:stun.l.google.com:19302' },
+    { urls: 'stun:stun1.l.google.com:19302' },
+    { urls: 'stun:stun.cloudflare.com:3478' },
+    {
+      urls: 'turn:openrelay.metered.ca:80',
+      username: 'openrelayproject',
+      credential: 'openrelayproject'
+    },
+    {
+      urls: 'turn:openrelay.metered.ca:443',
+      username: 'openrelayproject',
+      credential: 'openrelayproject'
+    },
+    {
+      urls: 'turns:openrelay.metered.ca:443?transport=tcp',
+      username: 'openrelayproject',
+      credential: 'openrelayproject'
+    }
+  ],
+  iceCandidatePoolSize: 4
+};
+
 /**
  * Encapsulates a WebRTC peer-to-peer session using PeerJS signaling
  * with short 6-character room codes. Gameplay runs directly over WebRTC DataChannel.
@@ -55,11 +79,19 @@ export class PeerSession {
 
   _bindConnection(conn) {
     this.conn = conn;
-    conn.on('open', () => {
+    const handleOpen = () => {
+      if (this.connected) return;
       this.connected = true;
       this.onStateChange('connected');
       this.onOpen();
-    });
+    };
+
+    if (conn.open) {
+      queueMicrotask(handleOpen);
+    } else {
+      conn.on('open', handleOpen);
+    }
+
     conn.on('data', (data) => {
       if (data && typeof data === 'object') {
         this.onMessage(data);
@@ -84,12 +116,25 @@ export class PeerSession {
     this.onStateChange('creating');
 
     return new Promise((resolve, reject) => {
-      const peer = new window.Peer(ROOM_PREFIX + this.roomCode, { debug: 0 });
+      const peer = new window.Peer(ROOM_PREFIX + this.roomCode, {
+        debug: 0,
+        config: RTC_CONFIG
+      });
       this.peer = peer;
 
       let settled = false;
+      const timer = setTimeout(() => {
+        if (!settled) {
+          settled = true;
+          this.close(false);
+          reject(new Error('Signaling server timed out — try again'));
+        }
+      }, 12000);
+
       peer.on('open', () => {
+        if (settled) return;
         settled = true;
+        clearTimeout(timer);
         this.onStateChange('waiting_guest');
         resolve(this.roomCode);
       });
@@ -97,7 +142,13 @@ export class PeerSession {
         this.onStateChange('connecting');
         this._bindConnection(conn);
       });
+      peer.on('disconnected', () => {
+        if (this.peer === peer && !peer.destroyed) {
+          try { peer.reconnect(); } catch (e) {}
+        }
+      });
       peer.on('error', (err) => {
+        clearTimeout(timer);
         if (!settled) {
           settled = true;
           reject(err);
@@ -117,23 +168,42 @@ export class PeerSession {
     this.onStateChange('connecting');
 
     return new Promise((resolve, reject) => {
-      const peer = new window.Peer(undefined, { debug: 0 });
+      const peer = new window.Peer(undefined, {
+        debug: 0,
+        config: RTC_CONFIG
+      });
       this.peer = peer;
 
       let settled = false;
-      peer.on('open', () => {
-        const conn = peer.connect(ROOM_PREFIX + code, { reliable: true });
-        this._bindConnection(conn);
-        conn.on('open', () => {
-          if (!settled) {
-            settled = true;
-            resolve(code);
-          }
-        });
-      });
-      peer.on('error', (err) => {
+      const timer = setTimeout(() => {
         if (!settled) {
           settled = true;
+          this.close(false);
+          reject(new Error('Connection timed out — verify the room code is open'));
+        }
+      }, 15000);
+
+      peer.on('open', () => {
+        const conn = peer.connect(ROOM_PREFIX + code, {
+          reliable: true,
+          serialization: 'json'
+        });
+        this._bindConnection(conn);
+        const onReady = () => {
+          if (!settled) {
+            settled = true;
+            clearTimeout(timer);
+            resolve(code);
+          }
+        };
+        if (conn.open) onReady();
+        else conn.on('open', onReady);
+      });
+      peer.on('error', (err) => {
+        clearTimeout(timer);
+        if (!settled) {
+          settled = true;
+          this.close(false);
           reject(err);
         } else {
           this.onError(err);
